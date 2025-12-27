@@ -159,51 +159,53 @@
 </script>
 
 <div
-	class="flex min-h-screen flex-col items-center justify-center gap-8 bg-linear-to-br from-purple-500 via-pink-500 to-orange-400 p-4"
+	class="flex min-h-screen flex-col items-center overflow-y-auto bg-linear-to-br from-purple-500 via-pink-500 to-orange-400 p-4 pt-20"
 >
 	<BackButton />
 
-	<div class="grid w-full max-w-md grid-cols-5 border-4 border-white bg-white/90 shadow-2xl">
-		{#each grid as cell, index (cell.id)}
-			<button
-				bind:this={cellRefs[index]}
-				onclick={() => !($useStar && isCenterCell(index)) && toggleCell(index)}
-				disabled={$useStar && isCenterCell(index)}
-				class="flex aspect-square items-center justify-center border-2 border-gray-300 text-xl font-bold transition-all md:text-2xl
+	<div class="flex w-full max-w-md flex-col justify-center gap-8 py-8">
+		<div class="grid w-full grid-cols-5 border-4 border-white bg-white/90 shadow-2xl">
+			{#each grid as cell, index (cell.id)}
+				<button
+					bind:this={cellRefs[index]}
+					onclick={() => !($useStar && isCenterCell(index)) && toggleCell(index)}
+					disabled={$useStar && isCenterCell(index)}
+					class="flex aspect-square items-center justify-center border-2 border-gray-300 text-xl font-bold transition-all md:text-2xl
           {isCellChecked(cell, index)
-					? 'bg-green-500 text-white shadow-lg'
-					: 'bg-white text-gray-800 hover:bg-gray-100'}
+						? 'bg-green-500 text-white shadow-lg'
+						: 'bg-white text-gray-800 hover:bg-gray-100'}
           {$useStar && isCenterCell(index) ? 'cursor-not-allowed' : ''}"
-			>
-				{#if $useStar && isCenterCell(index)}
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						viewBox="0 0 24 24"
-						fill="currentColor"
-						class="size-6 text-black"
-					>
-						<path
-							fill-rule="evenodd"
-							d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z"
-							clip-rule="evenodd"
-						/>
-					</svg>
-				{:else}
-					{cell.id}
-				{/if}
-			</button>
-		{/each}
-	</div>
+				>
+					{#if $useStar && isCenterCell(index)}
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 24 24"
+							fill="currentColor"
+							class="size-6 text-black"
+						>
+							<path
+								fill-rule="evenodd"
+								d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z"
+								clip-rule="evenodd"
+							/>
+						</svg>
+					{:else}
+						{cell.id}
+					{/if}
+				</button>
+			{/each}
+		</div>
 
-	<button
-		bind:this={bingoButtonRef}
-		onclick={reset}
-		disabled={!winner}
-		class="w-full max-w-md rounded-3xl px-8 py-4 text-2xl font-black text-white shadow-[0_8px_0_rgba(0,0,0,0.3)] transition-all
+		<button
+			bind:this={bingoButtonRef}
+			onclick={reset}
+			disabled={!winner}
+			class="w-full max-w-md transform rounded-3xl border-4 border-white px-8 py-4 text-2xl font-black text-white shadow-[0_8px_0_rgba(0,0,0,0.3)] transition-all
       {winner
-			? 'cursor-pointer bg-linear-to-r from-green-400 to-green-600 hover:scale-105 hover:shadow-[0_12px_0_rgba(0,0,0,0.3)]'
-			: 'cursor-not-allowed bg-gray-400'}"
-	>
-		BINGO !
-	</button>
+				? 'animate-bounce cursor-pointer bg-linear-to-r from-green-400 to-green-600 hover:scale-110 hover:shadow-[0_16px_0_rgba(0,0,0,0.5)]'
+				: 'cursor-not-allowed bg-gray-400'}"
+		>
+			BINGO ! 🎉
+		</button>
+	</div>
 </div>
