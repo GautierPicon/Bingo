@@ -1,6 +1,7 @@
 <script>
 	import { onMount } from 'svelte';
 	import gsap from 'gsap';
+	import githubImg from '$lib/assets/github.png';
 
 	let titleRef = null;
 	let buttonsRef = [];
@@ -94,6 +95,6 @@
 		class="fixed right-4 bottom-4 rounded-full bg-white/10 p-2 shadow-md backdrop-blur-sm transition-all hover:scale-110"
 		aria-label="GitHub Repository"
 	>
-		<img src="src/lib/assets/github.png" alt="GitHub" class="size-7 md:size-8" />
+		<img src={githubImg} alt="GitHub" class="size-7 md:size-8" />
 	</a>
 </div>
