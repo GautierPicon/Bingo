@@ -1,7 +1,7 @@
 
 # Bingo [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/Gautierpicon/Bingo/blob/main/LICENSE.md)
 
-Play bingo with customised squares to make boring events fun
+Make your events more fun
 
 ## Features
 
