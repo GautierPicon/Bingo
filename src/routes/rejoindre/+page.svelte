@@ -29,11 +29,11 @@
 </script>
 
 <div
-	class="flex min-h-screen flex-col items-center justify-center gap-8 bg-linear-to-br from-blue-400 via-purple-500 to-pink-500 p-4"
+	class="flex min-h-screen flex-col items-center overflow-y-auto bg-linear-to-br from-blue-400 via-purple-500 to-pink-500 p-4 pt-20"
 >
 	<BackButton />
 
-	<div bind:this={formRef} class="w-full max-w-md">
+	<div bind:this={formRef} class="flex w-full max-w-md flex-1 flex-col justify-center py-8">
 		<div class="rounded-3xl border-4 border-white bg-white/90 p-8 shadow-2xl backdrop-blur-sm">
 			<h1
 				class="mb-6 bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-center text-5xl font-black text-transparent"
