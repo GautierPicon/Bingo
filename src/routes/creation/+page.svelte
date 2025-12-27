@@ -5,6 +5,7 @@
 	import { useStar } from '../store';
 
 	let formRef = null;
+	let groupName = '';
 	let playerName = '';
 
 	onMount(() => {
@@ -26,9 +27,9 @@
 	});
 
 	function createGame() {
-		if (playerName.trim()) {
-			window.location.href = `/jeu?name=${encodeURIComponent(playerName.trim())}`;
-		} else {
+		if (groupName.trim() && playerName.trim()) {
+			localStorage.setItem('bingo_group_name', groupName.trim());
+			localStorage.setItem('bingo_player_name', playerName.trim());
 			window.location.href = '/jeu';
 		}
 	}
@@ -48,14 +49,28 @@
 			</h1>
 
 			<div class="mb-6">
-				<label for="playerName" class="mb-2 block text-xl font-bold text-gray-700">
+				<label for="groupName" class="mb-2 block text-xl font-bold text-gray-700">
 					Nom de la partie
+				</label>
+				<input
+					id="groupName"
+					type="text"
+					bind:value={groupName}
+					placeholder="Ex: Soirée 🥂"
+					class="w-full rounded-2xl border-4 border-gray-200 bg-white px-4 py-4 text-center text-2xl font-bold text-gray-800 transition-all focus:border-green-500 focus:ring-4 focus:ring-green-200 focus:outline-none"
+					onkeypress={(e) => e.key === 'Enter' && document.getElementById('playerName')?.focus()}
+				/>
+			</div>
+
+			<div class="mb-6">
+				<label for="playerName" class="mb-2 block text-xl font-bold text-gray-700">
+					Votre nom
 				</label>
 				<input
 					id="playerName"
 					type="text"
 					bind:value={playerName}
-					placeholder="Ex: Partie entre amis 🎉"
+					placeholder="Ex: Marie"
 					class="w-full rounded-2xl border-4 border-gray-200 bg-white px-4 py-4 text-center text-2xl font-bold text-gray-800 transition-all focus:border-green-500 focus:ring-4 focus:ring-green-200 focus:outline-none"
 					onkeypress={(e) => e.key === 'Enter' && createGame()}
 				/>
@@ -93,7 +108,8 @@
 
 			<button
 				onclick={createGame}
-				class="w-full transform rounded-2xl border-4 border-white bg-linear-to-r from-green-400 to-teal-500 px-8 py-4 text-2xl font-black text-white shadow-[0_8px_0_rgba(0,0,0,0.3)] transition-all hover:scale-105 hover:shadow-[0_12px_0_rgba(0,0,0,0.3)] active:scale-95 active:shadow-none"
+				disabled={!groupName.trim() || !playerName.trim()}
+				class="w-full transform rounded-2xl border-4 border-white bg-linear-to-r from-green-400 to-teal-500 px-8 py-4 text-2xl font-black text-white shadow-[0_8px_0_rgba(0,0,0,0.3)] transition-all hover:scale-105 hover:shadow-[0_12px_0_rgba(0,0,0,0.3)] active:scale-95 active:shadow-none disabled:cursor-not-allowed disabled:opacity-50"
 			>
 				CRÉER LA PARTIE
 			</button>

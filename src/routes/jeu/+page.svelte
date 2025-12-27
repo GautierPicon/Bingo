@@ -11,8 +11,11 @@
 
 	let cellRefs = Array.from({ length: 25 }, () => null);
 	let bingoButtonRef = null;
+	let groupName = '';
 
 	onMount(() => {
+		groupName = localStorage.getItem('bingo_group_name') || 'Partie';
+
 		if (!$hasPlayedGridAnimation) {
 			gsap.fromTo(
 				cellRefs.filter((ref) => ref !== null),
@@ -163,7 +166,11 @@
 >
 	<BackButton />
 
-	<div class="flex w-full max-w-md flex-col justify-center gap-8 py-8">
+	<div class="flex w-full max-w-md flex-col justify-center gap-6 py-6">
+		<div class="text-center">
+			<p class="text-lg font-medium text-white opacity-90">{groupName}</p>
+		</div>
+
 		<div class="grid w-full grid-cols-5 border-4 border-white bg-white/90 shadow-2xl">
 			{#each grid as cell, index (cell.id)}
 				<button
