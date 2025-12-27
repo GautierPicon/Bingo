@@ -66,7 +66,7 @@
 
 			<div class="mb-6">
 				<label for="playerName" class="mb-2 block text-xl font-bold text-gray-700">
-					Votre nom
+					Votre pseudonyme
 				</label>
 				<input
 					id="playerName"

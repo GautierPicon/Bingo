@@ -5,6 +5,7 @@
 
 	let formRef = null;
 	let gameCode = '';
+	let playerName = '';
 
 	onMount(() => {
 		gsap.fromTo(
@@ -25,13 +26,14 @@
 	});
 
 	function joinGame() {
-		if (gameCode.trim()) {
+		if (gameCode.trim() && playerName.trim()) {
 			localStorage.setItem('bingo_group_name', gameCode.trim());
+			localStorage.setItem('bingo_player_name', playerName.trim());
 			window.location.href = '/jeu';
 		}
 	}
 
-	$: isFormValid = gameCode.trim().length > 0;
+	$: isFormValid = gameCode.trim() && playerName.trim();
 </script>
 
 <div
@@ -42,7 +44,7 @@
 	<div bind:this={formRef} class="flex w-full max-w-md flex-1 flex-col justify-center py-8">
 		<div class="rounded-3xl border-4 border-white bg-white/90 p-8 shadow-2xl backdrop-blur-sm">
 			<h1
-				class="mb-6 bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-center text-5xl font-black text-transparent"
+				class="mb-7 bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-center text-5xl font-black text-transparent"
 			>
 				Rejoindre
 			</h1>
@@ -56,6 +58,20 @@
 					type="text"
 					bind:value={gameCode}
 					placeholder="Ex: ABC123"
+					class="w-full rounded-2xl border-4 border-gray-200 bg-white px-4 py-4 text-center text-2xl font-bold text-gray-800 transition-all focus:border-blue-500 focus:ring-4 focus:ring-blue-200 focus:outline-none"
+					onkeypress={(e) => e.key === 'Enter' && document.getElementById('playerName')?.focus()}
+				/>
+			</div>
+
+			<div class="mb-6">
+				<label for="playerName" class="mb-2 block text-xl font-bold text-gray-700">
+					Votre pseudonyme
+				</label>
+				<input
+					id="playerName"
+					type="text"
+					bind:value={playerName}
+					placeholder="Ex: Marie"
 					class="w-full rounded-2xl border-4 border-gray-200 bg-white px-4 py-4 text-center text-2xl font-bold text-gray-800 transition-all focus:border-blue-500 focus:ring-4 focus:ring-blue-200 focus:outline-none"
 					onkeypress={(e) => e.key === 'Enter' && joinGame()}
 				/>
