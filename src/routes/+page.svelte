@@ -52,7 +52,7 @@
 		<button
 			bind:this={buttonsRef[0]}
 			onclick={createGame}
-			class="group relative transform rounded-3xl border-4 border-white bg-linear-to-br from-green-400 to-green-600 px-8 py-6 text-xl font-black text-white shadow-[0_8px_0_rgba(0,0,0,0.3)] transition-all hover:scale-105 hover:shadow-[0_12px_0_rgba(0,0,0,0.3)] active:scale-95 active:shadow-none md:text-2xl"
+			class="group relative transform cursor-pointer rounded-3xl border-4 border-white bg-linear-to-br from-green-400 to-green-600 px-8 py-6 text-xl font-black text-white shadow-[0_8px_0_rgba(0,0,0,0.3)] transition-all hover:scale-105 hover:shadow-[0_12px_0_rgba(0,0,0,0.3)] active:scale-95 active:shadow-none md:text-2xl"
 		>
 			<span class="relative z-10 flex items-center justify-center gap-3">
 				<svg
@@ -74,7 +74,7 @@
 		<button
 			bind:this={buttonsRef[1]}
 			onclick={joinGame}
-			class="group relative transform rounded-3xl border-4 border-white bg-linear-to-br from-blue-400 to-blue-600 px-8 py-6 text-xl font-black text-white shadow-[0_8px_0_rgba(0,0,0,0.3)] transition-all hover:scale-105 hover:shadow-[0_12px_0_rgba(0,0,0,0.3)] active:scale-95 active:shadow-none md:text-2xl"
+			class="group relative transform cursor-pointer rounded-3xl border-4 border-white bg-linear-to-br from-blue-400 to-blue-600 px-8 py-6 text-xl font-black text-white shadow-[0_8px_0_rgba(0,0,0,0.3)] transition-all hover:scale-105 hover:shadow-[0_12px_0_rgba(0,0,0,0.3)] active:scale-95 active:shadow-none md:text-2xl"
 		>
 			<span class="relative z-10 flex items-center justify-center gap-3">
 				<svg

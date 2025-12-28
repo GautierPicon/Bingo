@@ -177,7 +177,7 @@
 					bind:this={cellRefs[index]}
 					onclick={() => !($useStar && isCenterCell(index)) && toggleCell(index)}
 					disabled={$useStar && isCenterCell(index)}
-					class="flex aspect-square items-center justify-center border-2 border-gray-300 text-xl font-bold transition-all md:text-2xl
+					class="flex aspect-square cursor-pointer items-center justify-center border-2 border-gray-300 text-xl font-bold transition-all md:text-2xl
           {isCellChecked(cell, index)
 						? 'bg-green-500 text-white shadow-lg'
 						: 'bg-white text-gray-800 hover:bg-gray-100'}

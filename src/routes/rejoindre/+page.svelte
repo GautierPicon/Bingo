@@ -96,7 +96,7 @@
 			<button
 				onclick={joinGame}
 				disabled={!isFormValid}
-				class="w-full transform rounded-2xl border-4 border-white bg-linear-to-r from-blue-400 to-purple-500 px-8 py-4 text-2xl font-black text-white shadow-[0_8px_0_rgba(0,0,0,0.3)] transition-all disabled:cursor-not-allowed disabled:opacity-50 {isFormValid
+				class="w-full transform cursor-pointer rounded-2xl border-4 border-white bg-linear-to-r from-blue-400 to-purple-500 px-8 py-4 text-2xl font-black text-white shadow-[0_8px_0_rgba(0,0,0,0.3)] transition-all disabled:cursor-not-allowed disabled:opacity-50 {isFormValid
 					? 'hover:scale-105 hover:shadow-[0_12px_0_rgba(0,0,0,0.3)] active:scale-95 active:shadow-none'
 					: ''}"
 			>

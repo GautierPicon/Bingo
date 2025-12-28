@@ -173,7 +173,7 @@
 
 			<button
 				onclick={addFakePlayer}
-				class="mb-3 text-xs text-gray-600 hover:underline md:mb-4 md:text-sm"
+				class="mb-3 cursor-pointer text-xs text-gray-600 hover:underline md:mb-4 md:text-sm"
 			>
 				DEBUG: Ajouter un joueur
 			</button>
@@ -181,7 +181,7 @@
 			{#if $isHost}
 				<button
 					onclick={startGame}
-					class="w-full transform rounded-2xl border-4 border-white bg-linear-to-r from-green-400 to-green-600 px-6 py-3 text-lg font-black text-white shadow-[0_8px_0_rgba(0,0,0,0.3)] transition-all hover:scale-105 hover:shadow-[0_12px_0_rgba(0,0,0,0.3)] active:scale-95 active:shadow-none md:px-8 md:py-4 md:text-2xl"
+					class="w-full transform cursor-pointer rounded-2xl border-4 border-white bg-linear-to-r from-green-400 to-green-600 px-6 py-3 text-lg font-black text-white shadow-[0_8px_0_rgba(0,0,0,0.3)] transition-all hover:scale-105 hover:shadow-[0_12px_0_rgba(0,0,0,0.3)] active:scale-95 active:shadow-none md:px-8 md:py-4 md:text-2xl"
 				>
 					LANCER LA PARTIE
 				</button>
