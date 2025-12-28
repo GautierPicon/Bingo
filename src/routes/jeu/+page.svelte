@@ -183,7 +183,7 @@
 	<div class="flex w-full max-w-lg flex-col justify-center gap-6 py-6">
 		<div class="text-center">
 			<p
-				class="inline-block bg-linear-to-r from-yellow-200 via-white to-yellow-200 bg-clip-text px-8 py-2 text-3xl font-black text-transparent md:text-4xl"
+				class="inline-block bg-linear-to-r from-yellow-200 via-white to-yellow-200 bg-clip-text px-8 py-2 text-2xl font-black text-transparent md:text-4xl"
 			>
 				{groupName}
 			</p>
