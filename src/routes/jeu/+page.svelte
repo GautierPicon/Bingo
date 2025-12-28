@@ -112,15 +112,23 @@
 			'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;';
 		document.body.appendChild(container);
 
-		const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#ffeaa7'];
-		const particles = 50;
+		const colors = [
+			'#ff6b6b',
+			'#4ecdc4',
+			'#45b7d1',
+			'#96ceb4',
+			'#ffeaa7',
+			'#feca57',
+			'#ff9ff3',
+			'#54a0ff'
+		];
 
-		for (let i = 0; i < particles; i++) {
+		const createParticle = () => {
 			const particle = document.createElement('div');
 			const size = Math.random() * 8 + 4;
 			const color = colors[Math.floor(Math.random() * colors.length)];
 			const startX = Math.random() * window.innerWidth;
-			const startY = Math.random() * window.innerHeight * 0.5;
+			const startY = -20;
 
 			particle.style.cssText = `
 				position:absolute;
@@ -135,7 +143,7 @@
 			container.appendChild(particle);
 
 			gsap.to(particle, {
-				y: '+=100vh',
+				y: '+=110vh',
 				x: `+=${(Math.random() - 0.5) * 200}px`,
 				rotation: Math.random() * 720 - 360,
 				opacity: 0,
@@ -143,21 +151,26 @@
 				ease: 'power1.out',
 				onComplete: () => particle.remove()
 			});
-		}
+		};
 
-		setTimeout(() => container.remove(), 4000);
+		const interval = setInterval(() => {
+			for (let i = 0; i < 10; i++) {
+				createParticle();
+			}
+		}, 100);
+
+		setTimeout(() => {
+			clearInterval(interval);
+			container.remove();
+		}, 2000);
 	}
 
 	function reset() {
 		createConfetti();
-		grid = grid.map((cell) => ({ ...cell, checked: false }));
-		winner = false;
 
-		gsap.fromTo(
-			cellRefs.filter((ref) => ref !== null),
-			{ scale: 1 },
-			{ scale: 0.95, duration: 0.2, yoyo: true, repeat: 1, ease: 'power1.inOut' }
-		);
+		setTimeout(() => {
+			window.location.href = '/salon';
+		}, 2000);
 	}
 </script>
 
