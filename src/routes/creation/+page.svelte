@@ -1,5 +1,6 @@
 <script>
 	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import gsap from 'gsap';
 	import BackButton from '$lib/components/BackButton.svelte';
 	import { useStar, players, isHost } from '../store';
@@ -31,6 +32,8 @@
 	});
 
 	function createGame() {
+		if (!browser) return;
+
 		if (groupName.trim() && playerName.trim()) {
 			localStorage.setItem('bingo_group_name', groupName.trim());
 			localStorage.setItem('bingo_player_name', playerName.trim());

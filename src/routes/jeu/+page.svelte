@@ -1,5 +1,6 @@
 <script>
 	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { useStar, hasPlayedGridAnimation } from '../store';
 	import gsap from 'gsap';
 	import BackButton from '$lib/components/BackButton.svelte';
@@ -14,6 +15,8 @@
 	let groupName = '';
 
 	onMount(() => {
+		if (!browser) return;
+
 		groupName = localStorage.getItem('bingo_group_name') || 'Partie';
 
 		if (!$hasPlayedGridAnimation) {
@@ -107,6 +110,8 @@
 	}
 
 	function createConfetti() {
+		if (!browser) return;
+
 		const container = document.createElement('div');
 		container.style.cssText =
 			'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;';
@@ -166,6 +171,8 @@
 	}
 
 	function reset() {
+		if (!browser) return;
+
 		createConfetti();
 
 		setTimeout(() => {
