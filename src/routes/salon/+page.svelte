@@ -183,7 +183,7 @@
 			</h1>
 
 			<div class="mb-4 flex flex-col items-center md:mb-6">
-				<p class="text-center text-lg font-bold text-gray-700 md:text-xl">Code de la partie:</p>
+				<p class="text-center text-lg font-bold text-black md:text-xl">Code de la partie:</p>
 				<button
 					onclick={copyCode}
 					class="group flex cursor-pointer items-center gap-2 rounded-lg bg-transparent px-4 py-2"
@@ -227,7 +227,7 @@
 			</div>
 
 			<div class="mb-4 md:mb-6">
-				<p class="mb-3 text-center text-xl font-bold text-gray-700 md:mb-4 md:text-2xl">
+				<p class="mb-3 text-center text-xl font-bold text-black md:mb-4 md:text-2xl">
 					{players.length} joueurs:
 				</p>
 				<div class="grid auto-rows-fr grid-cols-2 gap-3 sm:grid-cols-3 md:gap-4">
