@@ -12,10 +12,12 @@
 	let currentPlayerName = '';
 	let previousPlayerCount = 0;
 	let groupName = '';
+	let roomCode = '';
 
 	onMount(() => {
 		currentPlayerName = localStorage.getItem('bingo_player_name') || '';
 		groupName = localStorage.getItem('bingo_group_name') || 'Partie';
+		roomCode = localStorage.getItem('bingo_room_code') || 'XXX XXX';
 
 		const playerName = currentPlayerName || 'joueur';
 		const currentPlayers = get(players);
@@ -130,9 +132,11 @@
 
 			<div class="mb-4 md:mb-6">
 				<p class="mb-2 text-center text-lg font-bold text-gray-700 md:mb-4 md:text-xl">
-					Code de la partie
+					Code de la partie:
 				</p>
-				<p class="text-center text-3xl font-black text-gray-800 md:text-4xl">XXX XXX</p>
+				<p class="text-center text-3xl font-black text-gray-800 md:text-4xl">
+					{roomCode}
+				</p>
 			</div>
 
 			<div class="mb-4 md:mb-6">

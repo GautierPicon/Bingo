@@ -4,11 +4,14 @@
 	import gsap from 'gsap';
 	import BackButton from '$lib/components/BackButton.svelte';
 	import { useStar, players, isHost } from '../store';
+	import { supabase } from '$lib/supabase';
 	import profilImg from '$lib/assets/profil.png';
 
 	let formRef = null;
 	let groupName = '';
 	let playerName = '';
+	let isCreating = false;
+	let errorMessage = '';
 
 	onMount(() => {
 		players.set([]);
@@ -31,13 +34,66 @@
 		);
 	});
 
-	function createGame() {
-		if (groupName.trim() && playerName.trim()) {
+	// Génère un code unique à 6 caractères
+	function generateRoomCode() {
+		const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // Sans caractères ambigus
+		let code = '';
+		for (let i = 0; i < 6; i++) {
+			code += chars.charAt(Math.floor(Math.random() * chars.length));
+		}
+		// Formate le code: XXX XXX
+		return code.slice(0, 3) + ' ' + code.slice(3);
+	}
+
+	async function createGame() {
+		if (!groupName.trim() || !playerName.trim()) return;
+
+		isCreating = true;
+		errorMessage = '';
+
+		try {
+			// 1. Créer le salon dans Supabase
+			const roomCode = generateRoomCode();
+			const { data: room, error: roomError } = await supabase
+				.from('rooms')
+				.insert([
+					{
+						code: roomCode.replace(' ', ''), // Stocke sans espace
+						name: groupName.trim(),
+						use_star: $useStar,
+						status: 'waiting'
+					}
+				])
+				.select()
+				.single();
+
+			if (roomError) throw roomError;
+
+			// 2. Ajouter l'hôte comme joueur
+			const { data: player, error: playerError } = await supabase
+				.from('players')
+				.insert([
+					{
+						room_id: room.id,
+						name: playerName.trim(),
+						is_host: true
+					}
+				])
+				.select()
+				.single();
+
+			if (playerError) throw playerError;
+
+			// 3. Stocker localement
+			localStorage.setItem('bingo_room_id', room.id);
+			localStorage.setItem('bingo_room_code', roomCode);
 			localStorage.setItem('bingo_group_name', groupName.trim());
+			localStorage.setItem('bingo_player_id', player.id);
 			localStorage.setItem('bingo_player_name', playerName.trim());
 
+			// 4. Mettre à jour les stores
 			const host = {
-				id: Date.now(),
+				id: player.id,
 				pseudo: playerName.trim(),
 				photo: profilImg,
 				isHost: true
@@ -46,7 +102,13 @@
 			players.set([host]);
 			isHost.set(true);
 
+			// 5. Rediriger vers le salon
 			goto('/salon');
+		} catch (error) {
+			console.error('Erreur lors de la création du salon:', error);
+			errorMessage = 'Une erreur est survenue lors de la création du salon. Réessayez.';
+		} finally {
+			isCreating = false;
 		}
 	}
 
@@ -66,6 +128,12 @@
 				Créer
 			</h1>
 
+			{#if errorMessage}
+				<div class="mb-4 rounded-xl border-2 border-red-400 bg-red-100 p-3 text-sm text-red-700">
+					{errorMessage}
+				</div>
+			{/if}
+
 			<div class="mb-6">
 				<label for="groupName" class="mb-2 block text-xl font-bold text-gray-700">
 					Nom du salon
@@ -75,7 +143,8 @@
 					type="text"
 					bind:value={groupName}
 					placeholder="Ex: Soirée 🥂"
-					class="w-full rounded-2xl border-4 border-gray-200 bg-white px-4 py-4 text-center text-2xl font-bold text-gray-800 transition-all focus:border-green-500 focus:ring-4 focus:ring-green-200 focus:outline-none"
+					disabled={isCreating}
+					class="w-full rounded-2xl border-4 border-gray-200 bg-white px-4 py-4 text-center text-2xl font-bold text-gray-800 transition-all focus:border-green-500 focus:ring-4 focus:ring-green-200 focus:outline-none disabled:opacity-50"
 					onkeypress={(e) => e.key === 'Enter' && document.getElementById('playerName')?.focus()}
 				/>
 			</div>
@@ -89,7 +158,8 @@
 					type="text"
 					bind:value={playerName}
 					placeholder="Ex: Marie"
-					class="w-full rounded-2xl border-4 border-gray-200 bg-white px-4 py-4 text-center text-2xl font-bold text-gray-800 transition-all focus:border-green-500 focus:ring-4 focus:ring-green-200 focus:outline-none"
+					disabled={isCreating}
+					class="w-full rounded-2xl border-4 border-gray-200 bg-white px-4 py-4 text-center text-2xl font-bold text-gray-800 transition-all focus:border-green-500 focus:ring-4 focus:ring-green-200 focus:outline-none disabled:opacity-50"
 					onkeypress={(e) => e.key === 'Enter' && createGame()}
 				/>
 			</div>
@@ -101,7 +171,8 @@
 					<input
 						type="checkbox"
 						bind:checked={$useStar}
-						class="peer h-8 w-8 cursor-pointer appearance-none rounded-lg border-4 border-gray-300 bg-white transition-all checked:border-green-500 checked:bg-green-500"
+						disabled={isCreating}
+						class="peer h-8 w-8 cursor-pointer appearance-none rounded-lg border-4 border-gray-300 bg-white transition-all checked:border-green-500 checked:bg-green-500 disabled:opacity-50"
 					/>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
@@ -126,12 +197,13 @@
 
 			<button
 				onclick={createGame}
-				disabled={!isFormValid}
-				class="w-full transform cursor-pointer rounded-2xl border-4 border-white bg-linear-to-r from-green-400 to-teal-500 px-8 py-4 text-2xl font-black text-white shadow-[0_8px_0_rgba(0,0,0,0.3)] transition-all disabled:cursor-not-allowed disabled:opacity-50 {isFormValid
+				disabled={!isFormValid || isCreating}
+				class="w-full transform cursor-pointer rounded-2xl border-4 border-white bg-linear-to-r from-green-400 to-teal-500 px-8 py-4 text-2xl font-black text-white shadow-[0_8px_0_rgba(0,0,0,0.3)] transition-all disabled:cursor-not-allowed disabled:opacity-50 {isFormValid &&
+				!isCreating
 					? 'hover:scale-105 hover:shadow-[0_12px_0_rgba(0,0,0,0.3)] active:scale-95 active:shadow-none'
 					: ''}"
 			>
-				CRÉER LE SALON
+				{isCreating ? 'CRÉATION...' : 'CRÉER LE SALON'}
 			</button>
 		</div>
 	</div>
