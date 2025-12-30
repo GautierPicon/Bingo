@@ -15,7 +15,7 @@ Make your events more fun
 **Client:** 
 - Tech: Sveltekit (Svelte)
 - Library: TailwindCSS, GSAP, eslint, prettier
-- Icons: (Heroicons)[https://heroicons.com/]
+- Icons: [Heroicons](https://heroicons.com/)
 
 **Server:** 
 - Supabase
@@ -31,23 +31,23 @@ You will need to have [Bun](https://bun.sh/) installed.
 Clone the project
 
 ```bash
-  git clone https://github.com/Gautierpicon/Bingo
+git clone https://github.com/Gautierpicon/Bingo
 ```
 
 Go to the project directory
 
 ```bash
-  cd bingo
+cd bingo
 ```
 
 Install dependencies
 
 ```bash
-  bun install
+bun install
 ```
 
 Start the server
 
 ```bash
-  bun run dev
+bun run dev
 ```
