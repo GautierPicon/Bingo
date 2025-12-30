@@ -12,9 +12,13 @@ Make your events more fun
 
 ## Tech Stack
 
-**Client:** sveltekit (svelte), TailwindCSS, GSAP, eslint, prettier
+**Client:** 
+- Tech: Sveltekit (Svelte)
+- Library: TailwindCSS, GSAP, eslint, prettier
+- Icons: (Heroicons)[https://heroicons.com/]
 
-**Server:** Supabase
+**Server:** 
+- Supabase
 
 ## Feedback
 
