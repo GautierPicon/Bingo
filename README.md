@@ -1,4 +1,4 @@
-# Bingo [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/Gautierpicon/Bingo/blob/main/LICENSE.md)
+# Bingo [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/GautierPicon/Bingo/blob/main/LICENSE.md)
 
 Make your events more fun
 
@@ -22,7 +22,7 @@ Make your events more fun
 
 ## Feedback
 
-Feedback are welcome! Feel free to open an [issue](https://github.com/Gautierpicon/Bingo/issues) or a [pull request](https://github.com/Gautierpicon/Bingo/pulls) on the GitHub repository.
+Feedback are welcome! Feel free to open an [issue](https://github.com/GautierPicon/Bingo/issues) or a [pull request](https://github.com/GautierPicon/Bingo/pulls) on the GitHub repository.
 
 ## Contribute / Run Locally
 
