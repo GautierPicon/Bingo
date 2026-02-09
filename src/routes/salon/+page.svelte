@@ -1,37 +1,41 @@
 <script>
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 	import { goto } from '$app/navigation';
 	import gsap from 'gsap';
 	import BackButton from '$lib/components/BackButton.svelte';
-	import { players, isHost } from '../store';
-	import { get } from 'svelte/store';
+	import { isHost } from '../store';
+	import { supabase } from '$lib/supabase';
 	import profilImg from '$lib/assets/profil.png';
 
 	let salonRef = null;
 	let playerRefs = [];
-	let currentPlayerName = '';
+	let currentPlayerId = '';
 	let previousPlayerCount = 0;
 	let groupName = '';
+	let roomCode = '';
+	let roomId = '';
+	let players = [];
+	let playersSubscription = null;
+	let roomSubscription = null;
+	let copySuccess = false;
+	let isStartingGame = false;
+	let pollingInterval = null;
+	let winnerName = '';
 
-	onMount(() => {
-		currentPlayerName = localStorage.getItem('bingo_player_name') || '';
+	onMount(async () => {
+		currentPlayerId = localStorage.getItem('bingo_player_id') || '';
 		groupName = localStorage.getItem('bingo_group_name') || 'Partie';
+		roomCode = localStorage.getItem('bingo_room_code') || 'XXX XXX';
+		roomId = localStorage.getItem('bingo_room_id') || '';
 
-		const playerName = currentPlayerName || 'joueur';
-		const currentPlayers = get(players);
-		const existingPlayer = currentPlayers.find((p) => p.pseudo === playerName);
+		await loadPlayers();
 
-		if (!existingPlayer) {
-			const newPlayer = {
-				id: Date.now(),
-				pseudo: playerName,
-				photo: profilImg,
-				isHost: get(isHost) || currentPlayers.length === 0
-			};
-			players.set([newPlayer]);
-		}
+		subscribeToPlayers();
+		subscribeToRoomStatus();
+		await checkRoomStatus();
+		startPlayersPolling();
 
-		previousPlayerCount = $players.length;
+		previousPlayerCount = players.length;
 
 		gsap.fromTo(
 			salonRef,
@@ -68,9 +72,184 @@
 		}, 300);
 	});
 
-	$: if ($players.length > previousPlayerCount) {
-		animateNewPlayer($players.length - 1);
-		previousPlayerCount = $players.length;
+	onDestroy(() => {
+		if (playersSubscription) {
+			playersSubscription.unsubscribe();
+		}
+		if (roomSubscription) {
+			roomSubscription.unsubscribe();
+		}
+		if (pollingInterval) {
+			clearInterval(pollingInterval);
+		}
+	});
+
+	async function loadPlayers() {
+		if (!roomId) return;
+
+		const { data, error } = await supabase
+			.from('players')
+			.select('*')
+			.eq('room_id', roomId)
+			.order('joined_at', { ascending: true });
+
+		if (error) {
+			console.error('Erreur lors du chargement des joueurs:', error);
+			return;
+		}
+
+		players = data.map((player) => ({
+			id: player.id,
+			pseudo: player.name,
+			photo: profilImg,
+			isHost: player.is_host
+		}));
+	}
+
+	function startPlayersPolling() {
+		pollingInterval = setInterval(() => {
+			loadPlayers();
+			checkRoomStatus();
+		}, 2000);
+	}
+
+	async function checkRoomStatus() {
+		if (!roomId) return;
+
+		const { data, error } = await supabase
+			.from('rooms')
+			.select('status, winner_id')
+			.eq('id', roomId)
+			.single();
+
+		if (error) {
+			console.error('Erreur lors de la vérification du statut:', error);
+			return;
+		}
+
+		if (data?.status === 'playing') {
+			if (pollingInterval) {
+				clearInterval(pollingInterval);
+				pollingInterval = null;
+			}
+			winnerName = '';
+			goto('/jeu');
+		} else if (data?.status === 'waiting' && data?.winner_id) {
+			if (data.winner_id) {
+				const { data: winnerData } = await supabase
+					.from('players')
+					.select('name')
+					.eq('id', data.winner_id)
+					.single();
+				if (winnerData) {
+					winnerName = winnerData.name;
+				}
+			}
+		}
+	}
+
+	function subscribeToRoomStatus() {
+		if (!roomId) return;
+
+		const channelName = `room-status-${roomId}`;
+		console.log('Connexion au canal room status:', channelName);
+
+		roomSubscription = supabase
+			.channel(channelName)
+			.on(
+				'postgres_changes',
+				{
+					event: 'UPDATE',
+					schema: 'public',
+					table: 'rooms',
+					filter: `id=eq.${roomId}`
+				},
+				async (payload) => {
+					console.log('Changement de statut de la room:', payload);
+					if (payload.new.status === 'playing') {
+						if (pollingInterval) {
+							clearInterval(pollingInterval);
+							pollingInterval = null;
+						}
+						winnerName = '';
+						goto('/jeu');
+					} else if (payload.new.status === 'waiting' && payload.new.winner_id) {
+						if (payload.new.winner_id) {
+							const { data: winnerData } = await supabase
+								.from('players')
+								.select('name')
+								.eq('id', payload.new.winner_id)
+								.single();
+							if (winnerData) {
+								winnerName = winnerData.name;
+							}
+						}
+					}
+				}
+			)
+			.subscribe((status, err) => {
+				console.log('Statut subscription room:', status);
+				if (status === 'SUBSCRIBED') {
+					console.log('Abonnement room actif');
+				} else if (status === 'CHANNEL_ERROR') {
+					console.error('Erreur canal room:', err);
+				} else if (status === 'TIMED_OUT') {
+					console.warn('Timeout canal room');
+				}
+			});
+	}
+
+	function subscribeToPlayers() {
+		if (!roomId) return;
+
+		const channelName = `room-players-${roomId}`;
+		console.log('Connexion au canal:', channelName);
+
+		playersSubscription = supabase
+			.channel(channelName)
+			.on(
+				'postgres_changes',
+				{
+					event: '*',
+					schema: 'public',
+					table: 'players',
+					filter: `room_id=eq.${roomId}`
+				},
+				async (payload) => {
+					console.log('Changement joueur détecté:', payload);
+
+					if (payload.eventType === 'INSERT') {
+						const newPlayer = {
+							id: payload.new.id,
+							pseudo: payload.new.name,
+							photo: profilImg,
+							isHost: payload.new.is_host
+						};
+						players = [...players, newPlayer];
+						animateNewPlayer(players.length - 1);
+					} else if (payload.eventType === 'DELETE') {
+						players = players.filter((p) => p.id !== payload.old.id);
+					} else if (payload.eventType === 'UPDATE') {
+						players = players.map((p) =>
+							p.id === payload.new.id
+								? { ...p, pseudo: payload.new.name, isHost: payload.new.is_host }
+								: p
+						);
+					}
+				}
+			)
+			.subscribe((status, err) => {
+				console.log('Statut subscription joueurs:', status);
+				if (status === 'SUBSCRIBED') {
+					console.log('Abonnement joueurs actif');
+				} else if (status === 'CHANNEL_ERROR') {
+					console.error('Erreur canal joueurs:', err);
+					loadPlayers();
+				} else if (status === 'TIMED_OUT') {
+					console.warn('Timeout canal joueurs');
+					loadPlayers();
+				}
+			});
 	}
 
 	function animateNewPlayer(index) {
@@ -94,22 +273,70 @@
 	}
 
 	function isCurrentPlayer(player) {
-		return player.pseudo === currentPlayerName;
+		return player.id === currentPlayerId;
 	}
 
-	function addFakePlayer() {
-		const fakePlayer = {
-			id: Date.now(),
-			pseudo: 'joueur',
-			photo: profilImg,
-			isHost: false
-		};
+	async function startGame() {
+		if (!roomId || isStartingGame) return;
 
-		players.update((currentPlayers) => [...currentPlayers, fakePlayer]);
+		isStartingGame = true;
+
+		try {
+			const { error } = await supabase
+				.from('rooms')
+				.update({ status: 'playing', winner_id: null })
+				.eq('id', roomId);
+
+			if (error) {
+				console.error('Erreur lors du lancement de la partie:', error);
+				isStartingGame = false;
+				return;
+			}
+
+			if (pollingInterval) {
+				clearInterval(pollingInterval);
+				pollingInterval = null;
+			}
+
+			setTimeout(() => {
+				goto('/jeu');
+			}, 500);
+		} catch (error) {
+			console.error('Erreur lors du lancement:', error);
+			isStartingGame = false;
+		}
 	}
 
-	function startGame() {
-		goto('/jeu');
+	async function copyCode() {
+		const code = roomCode.replace(' ', '');
+
+		try {
+			if (navigator.clipboard && window.isSecureContext) {
+				await navigator.clipboard.writeText(code);
+			} else {
+				const textArea = document.createElement('textarea');
+				textArea.value = code;
+				textArea.style.position = 'fixed';
+				textArea.style.left = '-999999px';
+				textArea.style.top = '-999999px';
+				document.body.appendChild(textArea);
+				textArea.focus();
+				textArea.select();
+
+				const successful = document.execCommand('copy');
+				document.body.removeChild(textArea);
+
+				if (!successful) {
+					throw new Error('execCommand copy failed');
+				}
+			}
+
+			copySuccess = true;
+			setTimeout(() => (copySuccess = false), 2000);
+		} catch (err) {
+			console.error('Erreur lors de la copie:', err);
+			alert('Impossible de copier automatiquement. Code: ' + code);
+		}
 	}
 </script>
 
@@ -128,19 +355,65 @@
 				{groupName}
 			</h1>
 
-			<div class="mb-4 md:mb-6">
-				<p class="mb-2 text-center text-lg font-bold text-gray-700 md:mb-4 md:text-xl">
-					Code de la partie
-				</p>
-				<p class="text-center text-3xl font-black text-gray-800 md:text-4xl">XXX XXX</p>
+			<div class="mb-4 flex flex-col items-center md:mb-6">
+				<p class="text-center text-lg font-bold text-black md:text-xl">Code de la partie:</p>
+				<button
+					onclick={copyCode}
+					class="group flex cursor-pointer items-center gap-2 rounded-lg bg-transparent px-4 py-2"
+					title="Copier le code"
+				>
+					{#if copySuccess}
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							fill="none"
+							viewBox="0 0 24 24"
+							stroke-width="2"
+							stroke="currentColor"
+							class="size-7 transition-transform duration-200 group-hover:scale-115 active:scale-95"
+						>
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								d="M11.35 3.836c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m8.9-4.414c.376.023.75.05 1.124.08 1.131.094 1.976 1.057 1.976 2.192V16.5A2.25 2.25 0 0 1 18 18.75h-2.25m-7.5-10.5H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V18.75m-7.5-10.5h6.375c.621 0 1.125.504 1.125 1.125v9.375m-8.25-3 1.5 1.5 3-3.75"
+							/>
+						</svg>
+					{:else}
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							fill="none"
+							viewBox="0 0 24 24"
+							stroke-width="2"
+							stroke="currentColor"
+							class="size-7 transition-transform duration-200 group-hover:scale-115 active:scale-95"
+						>
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								d="M15.666 3.888A2.25 2.25 0 0 0 13.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 0 1-.75.75H9a.75.75 0 0 1-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 0 1-2.25 2.25H6.75A2.25 2.25 0 0 1 4.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 0 1 1.927-.184"
+							/>
+						</svg>
+					{/if}
+					<span class="text-3xl font-black text-gray-800 md:text-4xl">
+						{roomCode}
+					</span>
+				</button>
 			</div>
 
+			{#if winnerName}
+				<div
+					class="mb-4 rounded-2xl border-4 border-yellow-400 bg-linear-to-r from-yellow-300 via-orange-400 to-red-400 p-4 text-center shadow-xl md:mb-6 md:p-6"
+				>
+					<p class="text-2xl font-black text-white md:text-3xl">🎉 Victoire ! 🎉</p>
+					<p class="mt-2 text-xl font-bold text-white md:text-2xl">{winnerName} a gagné !</p>
+				</div>
+			{/if}
+
 			<div class="mb-4 md:mb-6">
-				<p class="mb-3 text-center text-xl font-bold text-gray-700 md:mb-4 md:text-2xl">
-					Joueurs ({$players.length})
+				<p class="mb-3 text-center text-xl font-bold text-black md:mb-4 md:text-2xl">
+					{players.length} joueur{players.length > 1 ? 's' : ''}:
 				</p>
 				<div class="grid auto-rows-fr grid-cols-2 gap-3 sm:grid-cols-3 md:gap-4">
-					{#each $players as player, index (player.id)}
+					{#each players as player, index (player.id)}
 						<div
 							bind:this={playerRefs[index]}
 							class="flex h-full flex-col items-center rounded-2xl border-4 p-3 shadow-lg transition-all hover:scale-105 hover:shadow-xl {isCurrentPlayer(
@@ -172,19 +445,13 @@
 				</div>
 			</div>
 
-			<button
-				onclick={addFakePlayer}
-				class="mb-3 cursor-pointer text-xs text-gray-600 hover:underline md:mb-4 md:text-sm"
-			>
-				DEBUG: Ajouter un joueur
-			</button>
-
 			{#if $isHost}
 				<button
 					onclick={startGame}
-					class="w-full transform cursor-pointer rounded-2xl border-4 border-white bg-linear-to-r from-green-400 to-green-600 px-6 py-3 text-lg font-black text-white shadow-[0_8px_0_rgba(0,0,0,0.3)] transition-all hover:scale-105 hover:shadow-[0_12px_0_rgba(0,0,0,0.3)] active:scale-95 active:shadow-none md:px-8 md:py-4 md:text-2xl"
+					disabled={isStartingGame}
+					class="w-full transform cursor-pointer rounded-2xl border-4 border-white bg-linear-to-r from-green-400 to-green-600 px-6 py-3 text-lg font-black text-white shadow-[0_8px_0_rgba(0,0,0,0.3)] transition-all hover:scale-105 hover:shadow-[0_12px_0_rgba(0,0,0,0.3)] active:scale-95 active:shadow-none disabled:cursor-not-allowed disabled:opacity-70 md:px-8 md:py-4 md:text-2xl"
 				>
-					LANCER LA PARTIE
+					{isStartingGame ? 'LANCEMENT...' : 'LANCER LA PARTIE'}
 				</button>
 			{/if}
 		</div>
