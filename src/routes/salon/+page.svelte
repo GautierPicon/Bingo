@@ -16,7 +16,10 @@
 	let roomId = '';
 	let players = [];
 	let playersSubscription = null;
+	let roomSubscription = null;
 	let copySuccess = false;
+	let isStartingGame = false;
+	let pollingInterval = null;
 
 	onMount(async () => {
 		currentPlayerId = localStorage.getItem('bingo_player_id') || '';
@@ -27,6 +30,9 @@
 		await loadPlayers();
 
 		subscribeToPlayers();
+		subscribeToRoomStatus();
+		await checkRoomStatus();
+		startPolling();
 
 		previousPlayerCount = players.length;
 
@@ -69,6 +75,12 @@
 		if (playersSubscription) {
 			playersSubscription.unsubscribe();
 		}
+		if (roomSubscription) {
+			roomSubscription.unsubscribe();
+		}
+		if (pollingInterval) {
+			clearInterval(pollingInterval);
+		}
 	});
 
 	async function loadPlayers() {
@@ -91,6 +103,61 @@
 			photo: profilImg,
 			isHost: player.is_host
 		}));
+	}
+
+	async function checkRoomStatus() {
+		if (!roomId) return;
+
+		const { data, error } = await supabase.from('rooms').select('status').eq('id', roomId).single();
+
+		if (error) {
+			console.error('Erreur lors de la vérification du statut:', error);
+			return;
+		}
+
+		if (data?.status === 'playing') {
+			// Arrêter le polling avant de rediriger
+			if (pollingInterval) {
+				clearInterval(pollingInterval);
+				pollingInterval = null;
+			}
+			goto('/jeu');
+		}
+	}
+
+	function startPolling() {
+		// Vérifier toutes les 2 secondes
+		pollingInterval = setInterval(() => {
+			checkRoomStatus();
+		}, 2000);
+	}
+
+	function subscribeToRoomStatus() {
+		if (!roomId) return;
+
+		roomSubscription = supabase
+			.channel(`room-status:${roomId}`)
+			.on(
+				'postgres_changes',
+				{
+					event: 'UPDATE',
+					schema: 'public',
+					table: 'rooms',
+					filter: `id=eq.${roomId}`
+				},
+				(payload) => {
+					console.log('Changement de statut de la room:', payload);
+					if (payload.new.status === 'playing') {
+						// Arrêter le polling avant de rediriger
+						if (pollingInterval) {
+							clearInterval(pollingInterval);
+							pollingInterval = null;
+						}
+						goto('/jeu');
+					}
+				}
+			)
+			.subscribe();
 	}
 
 	function subscribeToPlayers() {
@@ -156,8 +223,35 @@
 		return player.id === currentPlayerId;
 	}
 
-	function startGame() {
-		goto('/jeu');
+	async function startGame() {
+		if (!roomId || isStartingGame) return;
+
+		isStartingGame = true;
+
+		try {
+			const { error } = await supabase.from('rooms').update({ status: 'playing' }).eq('id', roomId);
+
+			if (error) {
+				console.error('Erreur lors du lancement de la partie:', error);
+				isStartingGame = false;
+				return;
+			}
+
+			// Arrêter le polling avant de rediriger
+			if (pollingInterval) {
+				clearInterval(pollingInterval);
+				pollingInterval = null;
+			}
+
+			// Attendre un peu pour laisser le temps à Realtime de notifier
+			// Si Realtime ne fonctionne pas, on redirige quand même l'hôte après 500ms
+			setTimeout(() => {
+				goto('/jeu');
+			}, 500);
+		} catch (error) {
+			console.error('Erreur lors du lancement:', error);
+			isStartingGame = false;
+		}
 	}
 
 	async function copyCode() {
@@ -266,9 +360,10 @@
 			{#if $isHost}
 				<button
 					onclick={startGame}
-					class="w-full transform cursor-pointer rounded-2xl border-4 border-white bg-linear-to-r from-green-400 to-green-600 px-6 py-3 text-lg font-black text-white shadow-[0_8px_0_rgba(0,0,0,0.3)] transition-all hover:scale-105 hover:shadow-[0_12px_0_rgba(0,0,0,0.3)] active:scale-95 active:shadow-none md:px-8 md:py-4 md:text-2xl"
+					disabled={isStartingGame}
+					class="w-full transform cursor-pointer rounded-2xl border-4 border-white bg-linear-to-r from-green-400 to-green-600 px-6 py-3 text-lg font-black text-white shadow-[0_8px_0_rgba(0,0,0,0.3)] transition-all hover:scale-105 hover:shadow-[0_12px_0_rgba(0,0,0,0.3)] active:scale-95 active:shadow-none disabled:cursor-not-allowed disabled:opacity-70 md:px-8 md:py-4 md:text-2xl"
 				>
-					LANCER LA PARTIE
+					{isStartingGame ? 'LANCEMENT...' : 'LANCER LA PARTIE'}
 				</button>
 			{/if}
 		</div>
