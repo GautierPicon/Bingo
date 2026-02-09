@@ -60,7 +60,6 @@ Add a .env.local file based on this template and replace the variables with your
 In SQL Editor, create this query and run it
 
 ```SQl
--- TABLE: rooms
 create table rooms (
   id uuid default gen_random_uuid() primary key,
   code text unique not null,
@@ -68,7 +67,6 @@ create table rooms (
   use_star boolean default false,
   host_id uuid,
 
-  -- Ajouter le champ winner_id
   winner_id uuid references players(id),
 
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
@@ -76,7 +74,6 @@ create table rooms (
     check (status in ('waiting', 'playing'))
 );
 
--- TABLE: players
 create table players (
   id uuid default gen_random_uuid() primary key,
   room_id uuid references rooms(id) on delete cascade,
@@ -85,7 +82,6 @@ create table players (
   joined_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
--- TABLE: grids
 create table grids (
   id uuid default gen_random_uuid() primary key,
   player_id uuid references players(id) on delete cascade,
@@ -94,13 +90,11 @@ create table grids (
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
--- INDEXES
 create index idx_players_room_id on players(room_id);
 create index idx_grids_player_id on grids(player_id);
 create index idx_grids_room_id on grids(room_id);
 create index idx_rooms_code on rooms(code);
 
--- REALTIME (Supabase)
 alter publication supabase_realtime add table rooms;
 alter publication supabase_realtime add table players;
 alter publication supabase_realtime add table grids;
