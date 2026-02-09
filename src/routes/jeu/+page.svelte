@@ -66,7 +66,7 @@
 			return;
 		}
 
-		if (data?.status === 'finished') {
+		if (data?.status === 'waiting') {
 			if (pollingInterval) {
 				clearInterval(pollingInterval);
 				pollingInterval = null;
@@ -96,7 +96,7 @@
 				},
 				(payload) => {
 					console.log('Changement de statut de la room (jeu):', payload);
-					if (payload.new.status === 'finished') {
+					if (payload.new.status === 'waiting') {
 						if (pollingInterval) {
 							clearInterval(pollingInterval);
 							pollingInterval = null;
@@ -245,7 +245,7 @@
 		if (roomId && playerId) {
 			const { error } = await supabase
 				.from('rooms')
-				.update({ status: 'finished', winner_id: playerId })
+				.update({ status: 'waiting', winner_id: playerId })
 				.eq('id', roomId);
 
 			if (error) {

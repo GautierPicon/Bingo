@@ -20,7 +20,6 @@
 	let copySuccess = false;
 	let isStartingGame = false;
 	let pollingInterval = null;
-	let gameFinished = false;
 	let winnerName = '';
 
 	onMount(async () => {
@@ -126,15 +125,9 @@
 				clearInterval(pollingInterval);
 				pollingInterval = null;
 			}
-			gameFinished = false;
 			winnerName = '';
 			goto('/jeu');
-		} else if (data?.status === 'finished') {
-			if (pollingInterval) {
-				clearInterval(pollingInterval);
-				pollingInterval = null;
-			}
-			gameFinished = true;
+		} else if (data?.status === 'waiting' && data?.winner_id) {
 			if (data.winner_id) {
 				const { data: winnerData } = await supabase
 					.from('players')
@@ -174,15 +167,9 @@
 							clearInterval(pollingInterval);
 							pollingInterval = null;
 						}
-						gameFinished = false;
 						winnerName = '';
 						goto('/jeu');
-					} else if (payload.new.status === 'finished') {
-						if (pollingInterval) {
-							clearInterval(pollingInterval);
-							pollingInterval = null;
-						}
-						gameFinished = true;
+					} else if (payload.new.status === 'waiting' && payload.new.winner_id) {
 						if (payload.new.winner_id) {
 							const { data: winnerData } = await supabase
 								.from('players')
@@ -268,7 +255,10 @@
 		isStartingGame = true;
 
 		try {
-			const { error } = await supabase.from('rooms').update({ status: 'playing' }).eq('id', roomId);
+			const { error } = await supabase
+				.from('rooms')
+				.update({ status: 'playing', winner_id: null })
+				.eq('id', roomId);
 
 			if (error) {
 				console.error('Erreur lors du lancement de la partie:', error);
@@ -286,34 +276,6 @@
 			}, 500);
 		} catch (error) {
 			console.error('Erreur lors du lancement:', error);
-			isStartingGame = false;
-		}
-	}
-
-	async function restartGame() {
-		if (!roomId || isStartingGame) return;
-
-		isStartingGame = true;
-
-		try {
-			const { error } = await supabase
-				.from('rooms')
-				.update({ status: 'waiting', winner_id: null })
-				.eq('id', roomId);
-
-			if (error) {
-				console.error('Erreur lors de la réinitialisation:', error);
-				isStartingGame = false;
-				return;
-			}
-
-			gameFinished = false;
-			winnerName = '';
-			isStartingGame = false;
-
-			startPolling();
-		} catch (error) {
-			console.error('Erreur lors de la réinitialisation:', error);
 			isStartingGame = false;
 		}
 	}
@@ -421,7 +383,7 @@
 				</div>
 			</div>
 
-			{#if gameFinished}
+			{#if winnerName}
 				<div
 					class="mb-4 rounded-2xl border-4 border-yellow-400 bg-linear-to-r from-yellow-300 via-orange-400 to-red-400 p-4 text-center shadow-xl md:mb-6 md:p-6"
 				>
@@ -431,23 +393,13 @@
 			{/if}
 
 			{#if $isHost}
-				{#if gameFinished}
-					<button
-						onclick={restartGame}
-						disabled={isStartingGame}
-						class="w-full transform cursor-pointer rounded-2xl border-4 border-white bg-linear-to-r from-blue-400 to-blue-600 px-6 py-3 text-lg font-black text-white shadow-[0_8px_0_rgba(0,0,0,0.3)] transition-all hover:scale-105 hover:shadow-[0_12px_0_rgba(0,0,0,0.3)] active:scale-95 active:shadow-none disabled:cursor-not-allowed disabled:opacity-70 md:px-8 md:py-4 md:text-2xl"
-					>
-						{isStartingGame ? 'REDÉMARRAGE...' : 'NOUVELLE PARTIE'}
-					</button>
-				{:else}
-					<button
-						onclick={startGame}
-						disabled={isStartingGame}
-						class="w-full transform cursor-pointer rounded-2xl border-4 border-white bg-linear-to-r from-green-400 to-green-600 px-6 py-3 text-lg font-black text-white shadow-[0_8px_0_rgba(0,0,0,0.3)] transition-all hover:scale-105 hover:shadow-[0_12px_0_rgba(0,0,0,0.3)] active:scale-95 active:shadow-none disabled:cursor-not-allowed disabled:opacity-70 md:px-8 md:py-4 md:text-2xl"
-					>
-						{isStartingGame ? 'LANCEMENT...' : 'LANCER LA PARTIE'}
-					</button>
-				{/if}
+				<button
+					onclick={startGame}
+					disabled={isStartingGame}
+					class="w-full transform cursor-pointer rounded-2xl border-4 border-white bg-linear-to-r from-green-400 to-green-600 px-6 py-3 text-lg font-black text-white shadow-[0_8px_0_rgba(0,0,0,0.3)] transition-all hover:scale-105 hover:shadow-[0_12px_0_rgba(0,0,0,0.3)] active:scale-95 active:shadow-none disabled:cursor-not-allowed disabled:opacity-70 md:px-8 md:py-4 md:text-2xl"
+				>
+					{isStartingGame ? 'LANCEMENT...' : 'LANCER LA PARTIE'}
+				</button>
 			{/if}
 		</div>
 	</div>
