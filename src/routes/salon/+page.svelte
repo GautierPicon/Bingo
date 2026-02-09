@@ -416,7 +416,7 @@
 					{#each players as player, index (player.id)}
 						<div
 							bind:this={playerRefs[index]}
-							class="flex h-full flex-col items-center rounded-2xl border-4 p-3 shadow-lg transition-all hover:scale-105 hover:shadow-xl {isCurrentPlayer(
+							class="flex h-full flex-col items-center rounded-2xl border-4 p-3 shadow-lg transition-all {isCurrentPlayer(
 								player
 							)
 								? 'border-green-400 bg-green-50'
