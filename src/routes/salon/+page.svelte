@@ -116,7 +116,6 @@
 		}
 
 		if (data?.status === 'playing') {
-			// Arrêter le polling avant de rediriger
 			if (pollingInterval) {
 				clearInterval(pollingInterval);
 				pollingInterval = null;
@@ -126,7 +125,6 @@
 	}
 
 	function startPolling() {
-		// Vérifier toutes les 2 secondes
 		pollingInterval = setInterval(() => {
 			checkRoomStatus();
 		}, 2000);
@@ -148,7 +146,6 @@
 				(payload) => {
 					console.log('Changement de statut de la room:', payload);
 					if (payload.new.status === 'playing') {
-						// Arrêter le polling avant de rediriger
 						if (pollingInterval) {
 							clearInterval(pollingInterval);
 							pollingInterval = null;
@@ -237,14 +234,11 @@
 				return;
 			}
 
-			// Arrêter le polling avant de rediriger
 			if (pollingInterval) {
 				clearInterval(pollingInterval);
 				pollingInterval = null;
 			}
 
-			// Attendre un peu pour laisser le temps à Realtime de notifier
-			// Si Realtime ne fonctionne pas, on redirige quand même l'hôte après 500ms
 			setTimeout(() => {
 				goto('/jeu');
 			}, 500);
