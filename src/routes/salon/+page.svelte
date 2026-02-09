@@ -33,7 +33,7 @@
 		subscribeToPlayers();
 		subscribeToRoomStatus();
 		await checkRoomStatus();
-		startPolling();
+		startPlayersPolling();
 
 		previousPlayerCount = players.length;
 
@@ -106,6 +106,13 @@
 		}));
 	}
 
+	function startPlayersPolling() {
+		pollingInterval = setInterval(() => {
+			loadPlayers();
+			checkRoomStatus();
+		}, 2000);
+	}
+
 	async function checkRoomStatus() {
 		if (!roomId) return;
 
@@ -141,17 +148,14 @@
 		}
 	}
 
-	function startPolling() {
-		pollingInterval = setInterval(() => {
-			checkRoomStatus();
-		}, 2000);
-	}
-
 	function subscribeToRoomStatus() {
 		if (!roomId) return;
 
+		const channelName = `room-status-${roomId}`;
+		console.log('Connexion au canal room status:', channelName);
+
 		roomSubscription = supabase
-			.channel(`room-status:${roomId}`)
+			.channel(channelName)
 			.on(
 				'postgres_changes',
 				{
@@ -183,14 +187,26 @@
 					}
 				}
 			)
-			.subscribe();
+			.subscribe((status, err) => {
+				console.log('Statut subscription room:', status);
+				if (status === 'SUBSCRIBED') {
+					console.log('Abonnement room actif');
+				} else if (status === 'CHANNEL_ERROR') {
+					console.error('Erreur canal room:', err);
+				} else if (status === 'TIMED_OUT') {
+					console.warn('Timeout canal room');
+				}
+			});
 	}
 
 	function subscribeToPlayers() {
 		if (!roomId) return;
 
+		const channelName = `room-players-${roomId}`;
+		console.log('Connexion au canal:', channelName);
+
 		playersSubscription = supabase
-			.channel(`room:${roomId}`)
+			.channel(channelName)
 			.on(
 				'postgres_changes',
 				{
@@ -200,7 +216,7 @@
 					filter: `room_id=eq.${roomId}`
 				},
 				async (payload) => {
-					console.log('Changement détecté:', payload);
+					console.log('Changement joueur détecté:', payload);
 
 					if (payload.eventType === 'INSERT') {
 						const newPlayer = {
@@ -222,7 +238,18 @@
 					}
 				}
 			)
-			.subscribe();
+			.subscribe((status, err) => {
+				console.log('Statut subscription joueurs:', status);
+				if (status === 'SUBSCRIBED') {
+					console.log('Abonnement joueurs actif');
+				} else if (status === 'CHANNEL_ERROR') {
+					console.error('Erreur canal joueurs:', err);
+					loadPlayers();
+				} else if (status === 'TIMED_OUT') {
+					console.warn('Timeout canal joueurs');
+					loadPlayers();
+				}
+			});
 	}
 
 	function animateNewPlayer(index) {
