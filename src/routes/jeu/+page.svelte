@@ -1,9 +1,10 @@
 <script>
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { useStar, hasPlayedGridAnimation } from '../store';
 	import gsap from 'gsap';
 	import BackButton from '$lib/components/BackButton.svelte';
+	import { supabase } from '$lib/supabase';
 
 	let grid = Array.from({ length: 25 }, (_, i) => ({
 		id: i + 1,
@@ -13,9 +14,13 @@
 	let cellRefs = Array.from({ length: 25 }, () => null);
 	let bingoButtonRef = null;
 	let groupName = '';
+	let roomSubscription = null;
+	let roomId = '';
+	let pollingInterval = null;
 
-	onMount(() => {
+	onMount(async () => {
 		groupName = localStorage.getItem('bingo_group_name') || 'Partie';
+		roomId = localStorage.getItem('bingo_room_id') || '';
 
 		if (!$hasPlayedGridAnimation) {
 			gsap.fromTo(
@@ -36,7 +41,72 @@
 				}
 			);
 		}
+
+		subscribeToRoomStatus();
+		await checkRoomStatus();
+		startPolling();
 	});
+
+	onDestroy(() => {
+		if (roomSubscription) {
+			roomSubscription.unsubscribe();
+		}
+		if (pollingInterval) {
+			clearInterval(pollingInterval);
+		}
+	});
+
+	async function checkRoomStatus() {
+		if (!roomId) return;
+
+		const { data, error } = await supabase.from('rooms').select('status').eq('id', roomId).single();
+
+		if (error) {
+			console.error('Erreur lors de la vérification du statut:', error);
+			return;
+		}
+
+		if (data?.status === 'finished') {
+			if (pollingInterval) {
+				clearInterval(pollingInterval);
+				pollingInterval = null;
+			}
+			goto('/salon');
+		}
+	}
+
+	function startPolling() {
+		pollingInterval = setInterval(() => {
+			checkRoomStatus();
+		}, 2000);
+	}
+
+	function subscribeToRoomStatus() {
+		if (!roomId) return;
+
+		roomSubscription = supabase
+			.channel(`room-game-status:${roomId}`)
+			.on(
+				'postgres_changes',
+				{
+					event: 'UPDATE',
+					schema: 'public',
+					table: 'rooms',
+					filter: `id=eq.${roomId}`
+				},
+				(payload) => {
+					console.log('Changement de statut de la room (jeu):', payload);
+					if (payload.new.status === 'finished') {
+						if (pollingInterval) {
+							clearInterval(pollingInterval);
+							pollingInterval = null;
+						}
+						goto('/salon');
+					}
+				}
+			)
+			.subscribe();
+	}
 
 	function toggleCell(index) {
 		grid[index].checked = !grid[index].checked;
@@ -166,8 +236,22 @@
 		}, 2000);
 	}
 
-	function reset() {
+	async function reset() {
 		createConfetti();
+
+		const roomId = localStorage.getItem('bingo_room_id');
+		const playerId = localStorage.getItem('bingo_player_id');
+
+		if (roomId && playerId) {
+			const { error } = await supabase
+				.from('rooms')
+				.update({ status: 'finished', winner_id: playerId })
+				.eq('id', roomId);
+
+			if (error) {
+				console.error('Erreur lors de la fin de partie:', error);
+			}
+		}
 
 		setTimeout(() => {
 			goto('/salon');

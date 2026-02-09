@@ -20,6 +20,8 @@
 	let copySuccess = false;
 	let isStartingGame = false;
 	let pollingInterval = null;
+	let gameFinished = false;
+	let winnerName = '';
 
 	onMount(async () => {
 		currentPlayerId = localStorage.getItem('bingo_player_id') || '';
@@ -108,7 +110,11 @@
 	async function checkRoomStatus() {
 		if (!roomId) return;
 
-		const { data, error } = await supabase.from('rooms').select('status').eq('id', roomId).single();
+		const { data, error } = await supabase
+			.from('rooms')
+			.select('status, winner_id')
+			.eq('id', roomId)
+			.single();
 
 		if (error) {
 			console.error('Erreur lors de la vérification du statut:', error);
@@ -120,7 +126,25 @@
 				clearInterval(pollingInterval);
 				pollingInterval = null;
 			}
+			gameFinished = false;
+			winnerName = '';
 			goto('/jeu');
+		} else if (data?.status === 'finished') {
+			if (pollingInterval) {
+				clearInterval(pollingInterval);
+				pollingInterval = null;
+			}
+			gameFinished = true;
+			if (data.winner_id) {
+				const { data: winnerData } = await supabase
+					.from('players')
+					.select('name')
+					.eq('id', data.winner_id)
+					.single();
+				if (winnerData) {
+					winnerName = winnerData.name;
+				}
+			}
 		}
 	}
 
@@ -143,14 +167,32 @@
 					table: 'rooms',
 					filter: `id=eq.${roomId}`
 				},
-				(payload) => {
+				async (payload) => {
 					console.log('Changement de statut de la room:', payload);
 					if (payload.new.status === 'playing') {
 						if (pollingInterval) {
 							clearInterval(pollingInterval);
 							pollingInterval = null;
 						}
+						gameFinished = false;
+						winnerName = '';
 						goto('/jeu');
+					} else if (payload.new.status === 'finished') {
+						if (pollingInterval) {
+							clearInterval(pollingInterval);
+							pollingInterval = null;
+						}
+						gameFinished = true;
+						if (payload.new.winner_id) {
+							const { data: winnerData } = await supabase
+								.from('players')
+								.select('name')
+								.eq('id', payload.new.winner_id)
+								.single();
+							if (winnerData) {
+								winnerName = winnerData.name;
+							}
+						}
 					}
 				}
 			)
@@ -244,6 +286,34 @@
 			}, 500);
 		} catch (error) {
 			console.error('Erreur lors du lancement:', error);
+			isStartingGame = false;
+		}
+	}
+
+	async function restartGame() {
+		if (!roomId || isStartingGame) return;
+
+		isStartingGame = true;
+
+		try {
+			const { error } = await supabase
+				.from('rooms')
+				.update({ status: 'waiting', winner_id: null })
+				.eq('id', roomId);
+
+			if (error) {
+				console.error('Erreur lors de la réinitialisation:', error);
+				isStartingGame = false;
+				return;
+			}
+
+			gameFinished = false;
+			winnerName = '';
+			isStartingGame = false;
+
+			startPolling();
+		} catch (error) {
+			console.error('Erreur lors de la réinitialisation:', error);
 			isStartingGame = false;
 		}
 	}
@@ -351,14 +421,33 @@
 				</div>
 			</div>
 
-			{#if $isHost}
-				<button
-					onclick={startGame}
-					disabled={isStartingGame}
-					class="w-full transform cursor-pointer rounded-2xl border-4 border-white bg-linear-to-r from-green-400 to-green-600 px-6 py-3 text-lg font-black text-white shadow-[0_8px_0_rgba(0,0,0,0.3)] transition-all hover:scale-105 hover:shadow-[0_12px_0_rgba(0,0,0,0.3)] active:scale-95 active:shadow-none disabled:cursor-not-allowed disabled:opacity-70 md:px-8 md:py-4 md:text-2xl"
+			{#if gameFinished}
+				<div
+					class="mb-4 rounded-2xl border-4 border-yellow-400 bg-linear-to-r from-yellow-300 via-orange-400 to-red-400 p-4 text-center shadow-xl md:mb-6 md:p-6"
 				>
-					{isStartingGame ? 'LANCEMENT...' : 'LANCER LA PARTIE'}
-				</button>
+					<p class="text-2xl font-black text-white md:text-3xl">🎉 Victoire ! 🎉</p>
+					<p class="mt-2 text-xl font-bold text-white md:text-2xl">{winnerName} a gagné !</p>
+				</div>
+			{/if}
+
+			{#if $isHost}
+				{#if gameFinished}
+					<button
+						onclick={restartGame}
+						disabled={isStartingGame}
+						class="w-full transform cursor-pointer rounded-2xl border-4 border-white bg-linear-to-r from-blue-400 to-blue-600 px-6 py-3 text-lg font-black text-white shadow-[0_8px_0_rgba(0,0,0,0.3)] transition-all hover:scale-105 hover:shadow-[0_12px_0_rgba(0,0,0,0.3)] active:scale-95 active:shadow-none disabled:cursor-not-allowed disabled:opacity-70 md:px-8 md:py-4 md:text-2xl"
+					>
+						{isStartingGame ? 'REDÉMARRAGE...' : 'NOUVELLE PARTIE'}
+					</button>
+				{:else}
+					<button
+						onclick={startGame}
+						disabled={isStartingGame}
+						class="w-full transform cursor-pointer rounded-2xl border-4 border-white bg-linear-to-r from-green-400 to-green-600 px-6 py-3 text-lg font-black text-white shadow-[0_8px_0_rgba(0,0,0,0.3)] transition-all hover:scale-105 hover:shadow-[0_12px_0_rgba(0,0,0,0.3)] active:scale-95 active:shadow-none disabled:cursor-not-allowed disabled:opacity-70 md:px-8 md:py-4 md:text-2xl"
+					>
+						{isStartingGame ? 'LANCEMENT...' : 'LANCER LA PARTIE'}
+					</button>
+				{/if}
 			{/if}
 		</div>
 	</div>
