@@ -281,9 +281,35 @@
 	}
 
 	async function copyCode() {
-		await navigator.clipboard.writeText(roomCode.replace(' ', ''));
-		copySuccess = true;
-		setTimeout(() => (copySuccess = false), 2000);
+		const code = roomCode.replace(' ', '');
+
+		try {
+			if (navigator.clipboard && window.isSecureContext) {
+				await navigator.clipboard.writeText(code);
+			} else {
+				const textArea = document.createElement('textarea');
+				textArea.value = code;
+				textArea.style.position = 'fixed';
+				textArea.style.left = '-999999px';
+				textArea.style.top = '-999999px';
+				document.body.appendChild(textArea);
+				textArea.focus();
+				textArea.select();
+
+				const successful = document.execCommand('copy');
+				document.body.removeChild(textArea);
+
+				if (!successful) {
+					throw new Error('execCommand copy failed');
+				}
+			}
+
+			copySuccess = true;
+			setTimeout(() => (copySuccess = false), 2000);
+		} catch (err) {
+			console.error('Erreur lors de la copie:', err);
+			alert('Impossible de copier automatiquement. Code: ' + code);
+		}
 	}
 </script>
 
