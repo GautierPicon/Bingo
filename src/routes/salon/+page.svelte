@@ -372,6 +372,15 @@
 				</button>
 			</div>
 
+			{#if winnerName}
+				<div
+					class="mb-4 rounded-2xl border-4 border-yellow-400 bg-linear-to-r from-yellow-300 via-orange-400 to-red-400 p-4 text-center shadow-xl md:mb-6 md:p-6"
+				>
+					<p class="text-2xl font-black text-white md:text-3xl">🎉 Victoire ! 🎉</p>
+					<p class="mt-2 text-xl font-bold text-white md:text-2xl">{winnerName} a gagné !</p>
+				</div>
+			{/if}
+
 			<div class="mb-4 md:mb-6">
 				<p class="mb-3 text-center text-xl font-bold text-black md:mb-4 md:text-2xl">
 					{players.length} joueur{players.length > 1 ? 's' : ''}:
@@ -408,15 +417,6 @@
 					{/each}
 				</div>
 			</div>
-
-			{#if winnerName}
-				<div
-					class="mb-4 rounded-2xl border-4 border-yellow-400 bg-linear-to-r from-yellow-300 via-orange-400 to-red-400 p-4 text-center shadow-xl md:mb-6 md:p-6"
-				>
-					<p class="text-2xl font-black text-white md:text-3xl">🎉 Victoire ! 🎉</p>
-					<p class="mt-2 text-xl font-bold text-white md:text-2xl">{winnerName} a gagné !</p>
-				</div>
-			{/if}
 
 			{#if $isHost}
 				<button
