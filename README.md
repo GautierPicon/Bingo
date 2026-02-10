@@ -33,7 +33,7 @@ You will need to have [Bun](https://bun.sh/) installed.
 Clone the project
 
 ```bash
-git clone https://github.com/Gautierpicon/Bingo
+git clone https://github.com/GautierPicon/Bingo
 ```
 
 Go to the project directory

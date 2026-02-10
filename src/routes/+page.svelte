@@ -94,7 +94,7 @@
 	</div>
 
 	<a
-		href="https://github.com/Gautierpicon/Bingo"
+		href="https://github.com/GautierPicon/Bingo"
 		target="_blank"
 		rel="noopener noreferrer"
 		class="fixed right-4 bottom-4 rounded-full bg-white/10 p-2 shadow-md backdrop-blur-sm transition-all hover:scale-110"
