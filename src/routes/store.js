@@ -48,7 +48,6 @@ function createSessionStore(key, initialValue) {
 	return store;
 }
 
-// Stores de l'application
 export const useStar = createLocalStore('useStar', false);
 export const hasPlayedGridAnimation = createSessionStore('hasPlayedGridAnimation', false);
 export const isHost = createLocalStore('isHost', false);

@@ -115,7 +115,6 @@
 			players.set([newPlayer]);
 			isHost.set(false);
 
-			// Récupérer la configuration étoile du salon et l'appliquer au store
 			useStar.set(room.use_star);
 
 			goto('/salon');
