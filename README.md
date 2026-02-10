@@ -12,12 +12,14 @@ Make your events more fun
 
 ## Tech Stack
 
-**Client:** 
+**Client:**
+
 - Tech: [Sveltekit](https://svelte.dev/docs/kit/) [(Svelte)](https://svelte.dev/)
 - Library: [TailwindCSS](https://tailwindcss.com/), [GSAP](https://gsap.com/), [eslint](https://eslint.org/), [prettier](https://prettier.io/)
 - Icons: [Heroicons](https://heroicons.com/)
 
-**Server:** 
+**Server:**
+
 - [Supabase](https://supabase.com/)
 
 ## Feedback
