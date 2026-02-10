@@ -22,6 +22,20 @@
 		groupName = localStorage.getItem('bingo_group_name') || 'Partie';
 		roomId = localStorage.getItem('bingo_room_id') || '';
 
+		// Récupérer la configuration étoile du salon depuis Supabase
+		if (roomId) {
+			const { data: room, error } = await supabase
+				.from('rooms')
+				.select('use_star')
+				.eq('id', roomId)
+				.single();
+
+			if (!error && room) {
+				// Synchroniser le store avec la config du salon
+				useStar.set(room.use_star);
+			}
+		}
+
 		if (!$hasPlayedGridAnimation) {
 			gsap.fromTo(
 				cellRefs.filter((ref) => ref !== null),

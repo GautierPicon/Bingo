@@ -3,7 +3,7 @@
 	import { goto } from '$app/navigation';
 	import gsap from 'gsap';
 	import BackButton from '$lib/components/BackButton.svelte';
-	import { players, isHost } from '../store';
+	import { useStar, players, isHost } from '../store';
 	import { supabase } from '$lib/supabase';
 	import profilImg from '$lib/assets/profil.png';
 
@@ -114,6 +114,9 @@
 
 			players.set([newPlayer]);
 			isHost.set(false);
+
+			// Récupérer la configuration étoile du salon et l'appliquer au store
+			useStar.set(room.use_star);
 
 			goto('/salon');
 		} catch (error) {
