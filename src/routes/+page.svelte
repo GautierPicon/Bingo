@@ -63,7 +63,7 @@
 				BINGO<span class="text-indigo-600">.</span>
 			</h1>
 			<p class="mt-4 text-lg font-medium text-slate-500">
-				Faites de vos evenements un jeu entre amis.
+				Faites de vos évènements un jeu grandeur nature
 			</p>
 		</div>
 
