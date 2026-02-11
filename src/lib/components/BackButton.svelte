@@ -8,7 +8,7 @@
 
 <button
 	onclick={goHome}
-	class="absolute top-4 left-4 cursor-pointer rounded-2xl border-4 border-white bg-white/20 px-4 py-2 font-bold text-white shadow-lg backdrop-blur-sm hover:bg-white/30"
+	class="group absolute top-6 left-6 flex cursor-pointer items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-600 shadow-sm transition-all hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900 hover:shadow-md active:scale-95"
 >
 	← Accueil
 </button>
