@@ -286,7 +286,7 @@
 			</div>
 
 			<div
-				class="relative rounded-[2.5rem] border border-slate-200 bg-white p-4 shadow-xl shadow-slate-200/50"
+				class="relative rounded-3xl border border-slate-200 bg-white p-4 shadow-xl shadow-slate-200/50"
 			>
 				<div class="grid grid-cols-5 gap-2 md:gap-3">
 					{#each grid as cell, index (cell.id)}
