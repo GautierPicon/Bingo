@@ -340,120 +340,144 @@
 	}
 </script>
 
-<div
-	class="flex min-h-screen flex-col items-center overflow-y-auto bg-linear-to-br from-indigo-500 via-purple-500 to-pink-500 p-4 pt-20"
->
-	<BackButton />
+<div class="relative min-h-screen bg-slate-50 font-sans text-slate-900">
+	<header class="flex h-20 items-center px-6">
+		<BackButton />
+	</header>
 
-	<div bind:this={salonRef} class="flex w-full max-w-2xl flex-1 flex-col gap-8 py-4 md:py-8">
-		<div
-			class="rounded-3xl border-4 border-white bg-white/90 p-4 shadow-2xl backdrop-blur-sm md:p-8"
-		>
-			<h1
-				class="bg-linear-to-r from-indigo-600 to-purple-600 bg-clip-text pb-4 text-center text-4xl font-black text-transparent md:pb-6 md:text-5xl"
-			>
-				{groupName}
-			</h1>
-
-			<div class="mb-4 flex flex-col items-center md:mb-6">
-				<p class="text-center text-lg font-bold text-black md:text-xl">Code de la partie:</p>
-				<button
-					onclick={copyCode}
-					class="group flex cursor-pointer items-center gap-2 rounded-lg bg-transparent px-4 py-2"
-					title="Copier le code"
+	<main class="flex flex-col items-center p-6 pb-20">
+		<div bind:this={salonRef} class="w-full max-w-2xl">
+			<div class="mb-8 text-center">
+				<span
+					class="inline-block rounded-full bg-indigo-100 px-4 py-1 text-xs font-bold tracking-widest text-indigo-700 uppercase"
 				>
-					{#if copySuccess}
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							fill="none"
-							viewBox="0 0 24 24"
-							stroke-width="2"
-							stroke="currentColor"
-							class="size-7 transition-transform duration-200 group-hover:scale-115 active:scale-95"
-						>
-							<path
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								d="M11.35 3.836c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m8.9-4.414c.376.023.75.05 1.124.08 1.131.094 1.976 1.057 1.976 2.192V16.5A2.25 2.25 0 0 1 18 18.75h-2.25m-7.5-10.5H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V18.75m-7.5-10.5h6.375c.621 0 1.125.504 1.125 1.125v9.375m-8.25-3 1.5 1.5 3-3.75"
-							/>
-						</svg>
-					{:else}
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							fill="none"
-							viewBox="0 0 24 24"
-							stroke-width="2"
-							stroke="currentColor"
-							class="size-7 transition-transform duration-200 group-hover:scale-115 active:scale-95"
-						>
-							<path
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								d="M15.666 3.888A2.25 2.25 0 0 0 13.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 0 1-.75.75H9a.75.75 0 0 1-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 0 1-2.25 2.25H6.75A2.25 2.25 0 0 1 4.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 0 1 1.927-.184"
-							/>
-						</svg>
-					{/if}
-					<span class="text-3xl font-black text-gray-800 md:text-4xl">
-						{roomCode}
-					</span>
-				</button>
+					Salon d'attente
+				</span>
+				<h1 class="mt-4 text-4xl font-black tracking-tight text-slate-900 md:text-6xl">
+					{groupName}<span class="text-indigo-600">.</span>
+				</h1>
 			</div>
 
-			{#if winnerName}
+			<div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm md:p-10">
 				<div
-					class="mb-4 rounded-2xl border-4 border-yellow-400 bg-linear-to-r from-yellow-300 via-orange-400 to-red-400 p-4 text-center shadow-xl md:mb-6 md:p-6"
+					class="mb-10 flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-6"
 				>
-					<p class="text-2xl font-black text-white md:text-3xl">🎉 Victoire ! 🎉</p>
-					<p class="mt-2 text-xl font-bold text-white md:text-2xl">{winnerName} a gagné !</p>
-				</div>
-			{/if}
-
-			<div class="mb-4 md:mb-6">
-				<p class="mb-3 text-center text-xl font-bold text-black md:mb-4 md:text-2xl">
-					{players.length} joueur{players.length > 1 ? 's' : ''}:
-				</p>
-				<div class="grid auto-rows-fr grid-cols-2 gap-3 sm:grid-cols-3 md:gap-4">
-					{#each players as player, index (player.id)}
+					<p class="text-xs font-bold tracking-widest text-slate-400 uppercase">
+						Code d'invitation
+					</p>
+					<button
+						onclick={copyCode}
+						class="group mt-2 flex cursor-pointer items-center gap-3 transition-transform active:scale-95"
+					>
+						<span class="text-4xl font-black tracking-[0.2em] text-slate-800 md:text-5xl">
+							{roomCode}
+						</span>
 						<div
-							bind:this={playerRefs[index]}
-							class="flex h-full flex-col items-center rounded-2xl border-4 p-3 shadow-lg transition-all {isCurrentPlayer(
-								player
-							)
-								? 'border-green-400 bg-green-50'
-								: 'border-gray-200 bg-white'} md:p-4"
+							class="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-400 shadow-sm transition-colors group-hover:border-indigo-200 group-hover:text-indigo-600"
 						>
+							{#if copySuccess}
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									viewBox="0 0 24 24"
+									fill="currentColor"
+									class="size-5 text-green-500"
+								>
+									<path
+										fill-rule="evenodd"
+										d="M19.916 4.626a.75.75 0 0 1 .208 1.04l-9 13.5a.75.75 0 0 1-1.154.114l-6-6a.75.75 0 0 1 1.06-1.06l5.353 5.353 8.493-12.739a.75.75 0 0 1 1.04-.208Z"
+										clip-rule="evenodd"
+									/>
+								</svg>
+							{:else}
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									fill="none"
+									viewBox="0 0 24 24"
+									stroke-width="2"
+									stroke="currentColor"
+									class="size-5"
+								>
+									<path
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										d="M15.666 3.888A2.25 2.25 0 0 0 13.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 0 1-.75.75H9a.75.75 0 0 1-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 0 1-2.25 2.25H6.75A2.25 2.25 0 0 1 4.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 0 1 1.927-.184"
+									/>
+								</svg>
+							{/if}
+						</div>
+					</button>
+				</div>
+
+				{#if winnerName}
+					<div
+						class="mb-10 flex items-center gap-4 rounded-2xl border border-amber-200 bg-amber-50 p-4"
+					>
+						<span class="text-3xl">🏆</span>
+						<div>
+							<p class="text-sm font-black tracking-tight text-amber-900 uppercase">
+								Dernière Victoire
+							</p>
+							<p class="font-medium text-amber-700">{winnerName} a remporté la partie !</p>
+						</div>
+					</div>
+				{/if}
+
+				<div class="mb-10">
+					<div class="mb-6 flex items-center justify-between border-b border-slate-100 pb-4">
+						<h2 class="text-lg font-bold">Joueurs</h2>
+						<span class="rounded-full bg-slate-900 px-3 py-1 text-xs font-bold text-white">
+							{players.length} connecté{players.length > 1 ? 's' : ''}
+						</span>
+					</div>
+
+					<div class="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3">
+						{#each players as player (player.id)}
 							<div
-								class="mb-2 overflow-hidden rounded-full border-4 border-indigo-500 shadow-md md:mb-3"
+								class="relative flex items-center gap-3 rounded-2xl border border-slate-100 bg-slate-50/50 p-3 transition-all hover:bg-white hover:shadow-md {isCurrentPlayer(
+									player
+								)
+									? 'border-indigo-200 ring-2 ring-indigo-500/20'
+									: ''}"
 							>
 								<img
 									src={player.photo}
-									alt={player.pseudo}
-									class="size-12 object-cover md:size-16"
+									alt=""
+									class="size-10 rounded-full border-2 border-white object-cover shadow-sm"
 								/>
+								<div class="flex flex-col overflow-hidden">
+									<span class="truncate text-sm font-bold text-slate-800">{player.pseudo}</span>
+									{#if player.isHost}
+										<span class="text-[10px] font-bold tracking-wider text-indigo-500 uppercase"
+											>Hôte</span
+										>
+									{:else if isCurrentPlayer(player)}
+										<span class="text-[10px] font-bold tracking-wider text-slate-400 uppercase"
+											>Vous</span
+										>
+									{/if}
+								</div>
 							</div>
-							<p class="text-center text-xs font-bold text-gray-800 md:text-sm">
-								{player.pseudo}
-							</p>
-							{#if player.isHost}
-								<span class="mt-1 text-[10px] font-bold text-indigo-600 md:text-xs">Hôte</span>
-							{/if}
-							{#if isCurrentPlayer(player)}
-								<span class="mt-1 text-[10px] font-bold text-green-600 md:text-xs">Vous</span>
-							{/if}
-						</div>
-					{/each}
+						{/each}
+					</div>
 				</div>
-			</div>
 
-			{#if $isHost}
-				<button
-					onclick={startGame}
-					disabled={isStartingGame}
-					class="w-full transform cursor-pointer rounded-2xl border-4 border-white bg-linear-to-r from-green-400 to-green-600 px-6 py-3 text-lg font-black text-white shadow-[0_8px_0_rgba(0,0,0,0.3)] transition-all hover:scale-105 hover:shadow-[0_12px_0_rgba(0,0,0,0.3)] active:scale-95 active:shadow-none disabled:cursor-not-allowed disabled:opacity-70 md:px-8 md:py-4 md:text-2xl"
-				>
-					{isStartingGame ? 'LANCEMENT...' : 'LANCER LA PARTIE'}
-				</button>
-			{/if}
+				{#if $isHost}
+					<button
+						onclick={startGame}
+						disabled={isStartingGame || players.length < 1}
+						class="w-full rounded-2xl bg-slate-900 py-5 text-lg font-bold text-white transition-all hover:bg-indigo-600 active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"
+					>
+						{isStartingGame ? 'Préparation...' : 'Lancer la partie'}
+					</button>
+				{:else}
+					<div
+						class="flex items-center justify-center gap-3 rounded-2xl border border-slate-100 bg-slate-50 py-5 text-slate-500"
+					>
+						<div class="h-2 w-2 animate-pulse rounded-full bg-indigo-500"></div>
+						<span class="text-sm font-medium">Attente du lancement par l'hôte...</span>
+					</div>
+				{/if}
+			</div>
 		</div>
-	</div>
+	</main>
 </div>
