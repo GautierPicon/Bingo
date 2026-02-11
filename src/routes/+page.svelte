@@ -71,7 +71,7 @@
 			<button
 				bind:this={cardsRef[0]}
 				onclick={createGame}
-				class="cursor-pointer group flex flex-col items-center gap-4 rounded-3xl border border-slate-200 bg-white p-8 transition-all hover:border-indigo-300 hover:shadow-2xl hover:shadow-indigo-100 active:scale-[0.98]"
+				class="group flex cursor-pointer flex-col items-center gap-4 rounded-3xl border border-slate-200 bg-white p-8 transition-all hover:border-indigo-300 hover:shadow-2xl hover:shadow-indigo-100 active:scale-[0.98]"
 			>
 				<div
 					class="flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600 transition-colors group-hover:bg-indigo-600 group-hover:text-white"
@@ -96,7 +96,7 @@
 			<button
 				bind:this={cardsRef[1]}
 				onclick={joinGame}
-				class="cursor-pointer group flex flex-col items-center gap-4 rounded-3xl border border-slate-200 bg-white p-8 transition-all hover:border-indigo-300 hover:shadow-2xl hover:shadow-indigo-100 active:scale-[0.98]"
+				class="group flex cursor-pointer flex-col items-center gap-4 rounded-3xl border border-slate-200 bg-white p-8 transition-all hover:border-indigo-300 hover:shadow-2xl hover:shadow-indigo-100 active:scale-[0.98]"
 			>
 				<div
 					class="flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600 transition-colors group-hover:bg-indigo-600 group-hover:text-white"
@@ -128,9 +128,9 @@
 		href="https://github.com/GautierPicon/Bingo"
 		target="_blank"
 		rel="noopener noreferrer"
-		class="fixed bottom-8 flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 transition-all hover:bg-slate-50 hover:shadow-md"
+		class="fixed right-4 bottom-4 z-50 flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-3 text-sm font-medium text-slate-600 shadow-md transition-all hover:bg-slate-50 hover:shadow-lg md:right-auto md:bottom-8 md:left-1/2 md:-translate-x-1/2 md:px-4 md:py-2"
 	>
-		<img src={githubImg} alt="" class="size-5" />
-		<span>Open Source</span>
+		<img src={githubImg} alt="GitHub" class="size-5" />
+		<span class="hidden md:inline">Open Source</span>
 	</a>
 </div>
