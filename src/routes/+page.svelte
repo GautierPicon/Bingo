@@ -96,10 +96,10 @@
 			<button
 				bind:this={cardsRef[1]}
 				onclick={joinGame}
-				class="cursor-pointer group flex flex-col items-center gap-4 rounded-3xl border border-slate-200 bg-white p-8 transition-all hover:border-emerald-300 hover:shadow-2xl hover:shadow-emerald-100 active:scale-[0.98]"
+				class="cursor-pointer group flex flex-col items-center gap-4 rounded-3xl border border-slate-200 bg-white p-8 transition-all hover:border-indigo-300 hover:shadow-2xl hover:shadow-indigo-100 active:scale-[0.98]"
 			>
 				<div
-					class="flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600 transition-colors group-hover:bg-emerald-600 group-hover:text-white"
+					class="flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600 transition-colors group-hover:bg-indigo-600 group-hover:text-white"
 				>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"

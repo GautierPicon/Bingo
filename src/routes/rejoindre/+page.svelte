@@ -109,7 +109,7 @@
 		<div bind:this={formRef} class="w-full max-w-lg">
 			<div class="mb-10 text-center">
 				<h1 class="text-4xl font-black tracking-tight text-slate-900 md:text-5xl">
-					Rejoindre<span class="text-blue-600">.</span>
+					Rejoindre<span class="text-indigo-600">.</span>
 				</h1>
 				<p class="mt-2 text-slate-500">Saisissez le code pour entrer dans la partie.</p>
 			</div>
@@ -136,7 +136,7 @@
 							placeholder="XXX XXX"
 							maxlength="7"
 							disabled={isJoining}
-							class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4 text-center text-3xl font-black tracking-widest uppercase transition-all outline-none placeholder:text-slate-200 focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10 disabled:opacity-50"
+							class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4 text-center text-3xl font-black tracking-widest uppercase transition-all outline-none placeholder:text-slate-200 focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 disabled:opacity-50"
 						/>
 					</div>
 
@@ -153,7 +153,7 @@
 							bind:value={playerName}
 							placeholder="Ex: Marie"
 							disabled={isJoining}
-							class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4 text-lg font-semibold transition-all outline-none focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10 disabled:opacity-50"
+							class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4 text-lg font-semibold transition-all outline-none focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 disabled:opacity-50"
 						/>
 					</div>
 
@@ -161,7 +161,7 @@
 						<button
 							onclick={joinGame}
 							disabled={!isFormValid || isJoining}
-							class="group relative w-full overflow-hidden rounded-2xl bg-slate-900 py-5 text-lg font-bold text-white transition-all hover:bg-blue-600 active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400"
+							class="group relative w-full overflow-hidden rounded-2xl bg-slate-900 py-5 text-lg font-bold text-white transition-all hover:bg-indigo-600 active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400"
 						>
 							<span class="relative z-10 flex items-center justify-center gap-2">
 								{#if isJoining}
