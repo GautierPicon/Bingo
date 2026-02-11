@@ -5,28 +5,33 @@
 	import { players, isHost } from './store';
 	import githubImg from '$lib/assets/github.png';
 
+	let containerRef = null;
 	let titleRef = null;
-	let buttonsRef = [];
+	let cardsRef = [];
 
 	onMount(() => {
 		players.set([]);
 		isHost.set(false);
 
-		gsap.fromTo(
-			[titleRef, ...buttonsRef.filter(Boolean)],
-			{
-				opacity: 0,
-				y: 50,
-				scale: 0.9
-			},
+		const tl = gsap.timeline();
+
+		tl.fromTo(
+			titleRef,
+			{ opacity: 0, y: -20 },
+			{ opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' }
+		);
+
+		tl.fromTo(
+			cardsRef.filter(Boolean),
+			{ opacity: 0, y: 30 },
 			{
 				opacity: 1,
 				y: 0,
-				scale: 1,
-				duration: 0.8,
-				stagger: 0.2,
-				ease: 'elastic.out(1, 0.5)'
-			}
+				duration: 0.5,
+				stagger: 0.1,
+				ease: 'power2.out'
+			},
+			'-=0.3'
 		);
 	});
 
@@ -40,66 +45,92 @@
 </script>
 
 <div
-	class="relative flex min-h-screen flex-col items-center justify-center gap-12 bg-linear-to-br from-purple-500 via-pink-500 to-orange-400 p-4"
+	bind:this={containerRef}
+	class="relative flex min-h-screen flex-col items-center justify-center bg-slate-50 p-6 font-sans text-slate-900"
 >
-	<h1
-		bind:this={titleRef}
-		class="mb-4 text-center text-8xl font-black text-white drop-shadow-lg md:text-9xl"
-	>
-		BINGO
-	</h1>
+	<div class="pointer-events-none absolute inset-0 overflow-hidden">
+		<div
+			class="absolute -top-[10%] -left-[10%] h-[40%] w-[40%] rounded-full bg-indigo-50/50 blur-3xl"
+		></div>
+		<div
+			class="absolute -right-[10%] -bottom-[10%] h-[40%] w-[40%] rounded-full bg-orange-50/50 blur-3xl"
+		></div>
+	</div>
 
-	<div class="flex w-full max-w-lg flex-col gap-6 md:flex-row">
-		<button
-			bind:this={buttonsRef[0]}
-			onclick={createGame}
-			class="group relative transform cursor-pointer rounded-3xl border-4 border-white bg-linear-to-br from-green-400 to-green-600 px-8 py-6 text-xl font-black text-white shadow-[0_8px_0_rgba(0,0,0,0.3)] transition-all hover:scale-105 hover:shadow-[0_12px_0_rgba(0,0,0,0.3)] active:scale-95 active:shadow-none md:text-2xl"
-		>
-			<span class="relative z-10 flex items-center justify-center gap-3">
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					viewBox="0 0 24 24"
-					fill="currentColor"
-					class="size-7 md:size-12"
-				>
-					<path
-						fill-rule="evenodd"
-						d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 9a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25V15a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V9Z"
-						clip-rule="evenodd"
-					/>
-				</svg>
-				Créer un salon
-			</span>
-		</button>
+	<div class="relative z-10 w-full max-w-2xl text-center">
+		<div bind:this={titleRef} class="mb-16">
+			<h1 class="text-6xl font-black tracking-tighter text-slate-900 md:text-8xl">
+				BINGO<span class="text-indigo-600">.</span>
+			</h1>
+			<p class="mt-4 text-lg font-medium text-slate-500">
+				Faites de vos evenements un jeu entre amis.
+			</p>
+		</div>
 
-		<button
-			bind:this={buttonsRef[1]}
-			onclick={joinGame}
-			class="group relative transform cursor-pointer rounded-3xl border-4 border-white bg-linear-to-br from-blue-400 to-blue-600 px-8 py-6 text-xl font-black text-white shadow-[0_8px_0_rgba(0,0,0,0.3)] transition-all hover:scale-105 hover:shadow-[0_12px_0_rgba(0,0,0,0.3)] active:scale-95 active:shadow-none md:text-2xl"
-		>
-			<span class="relative z-10 flex items-center justify-center gap-3">
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					viewBox="0 0 24 24"
-					fill="currentColor"
-					class="size-7 md:size-12"
+		<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+			<button
+				bind:this={cardsRef[0]}
+				onclick={createGame}
+				class="cursor-pointer group flex flex-col items-center gap-4 rounded-3xl border border-slate-200 bg-white p-8 transition-all hover:border-indigo-300 hover:shadow-2xl hover:shadow-indigo-100 active:scale-[0.98]"
+			>
+				<div
+					class="flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600 transition-colors group-hover:bg-indigo-600 group-hover:text-white"
 				>
-					<path
-						d="M12 1.5a.75.75 0 0 1 .75.75V7.5h-1.5V2.25A.75.75 0 0 1 12 1.5ZM11.25 7.5v5.69l-1.72-1.72a.75.75 0 0 0-1.06 1.06l3 3a.75.75 0 0 0 1.06 0l3-3a.75.75 0 1 0-1.06-1.06l-1.72 1.72V7.5h3.75a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3h-9a3 3 0 0 1-3-3v-9a3 3 0 0 1 3-3h3.75Z"
-					/>
-				</svg>
-				Rejoindre un salon
-			</span>
-		</button>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						fill="none"
+						viewBox="0 0 24 24"
+						stroke-width="2.5"
+						stroke="currentColor"
+						class="size-8"
+					>
+						<path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+					</svg>
+				</div>
+				<div class="text-center">
+					<h2 class="text-xl font-bold">Créer un salon</h2>
+					<p class="text-sm text-slate-500">Devenez l'hôte et gérez la partie</p>
+				</div>
+			</button>
+
+			<button
+				bind:this={cardsRef[1]}
+				onclick={joinGame}
+				class="cursor-pointer group flex flex-col items-center gap-4 rounded-3xl border border-slate-200 bg-white p-8 transition-all hover:border-emerald-300 hover:shadow-2xl hover:shadow-emerald-100 active:scale-[0.98]"
+			>
+				<div
+					class="flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600 transition-colors group-hover:bg-emerald-600 group-hover:text-white"
+				>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						fill="none"
+						viewBox="0 0 24 24"
+						stroke-width="2"
+						stroke="currentColor"
+						class="size-8"
+					>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15M12 9l3 3m0 0-3 3m3-3H2.25"
+						/>
+					</svg>
+				</div>
+				<div class="text-center">
+					<h2 class="text-xl font-bold">Rejoindre</h2>
+					<p class="text-sm text-slate-500">Entrez un code et jouez</p>
+				</div>
+			</button>
+		</div>
 	</div>
 
 	<a
 		href="https://github.com/GautierPicon/Bingo"
 		target="_blank"
 		rel="noopener noreferrer"
-		class="fixed right-4 bottom-4 rounded-full bg-white/10 p-2 shadow-md backdrop-blur-sm transition-all hover:scale-110"
-		aria-label="GitHub Repository"
+		class="fixed bottom-8 flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 transition-all hover:bg-slate-50 hover:shadow-md"
 	>
-		<img src={githubImg} alt="GitHub" class="size-7 md:size-8" />
+		<img src={githubImg} alt="" class="size-5" />
+		<span>Open Source</span>
 	</a>
 </div>
