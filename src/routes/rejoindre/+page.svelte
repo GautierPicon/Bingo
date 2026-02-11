@@ -19,26 +19,14 @@
 
 		gsap.fromTo(
 			formRef,
-			{
-				opacity: 0,
-				y: 50,
-				scale: 0.95
-			},
-			{
-				opacity: 1,
-				y: 0,
-				scale: 1,
-				duration: 0.8,
-				ease: 'elastic.out(1, 0.5)'
-			}
+			{ opacity: 0, y: 20 },
+			{ opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' }
 		);
 	});
 
 	function formatCode(value) {
 		const cleaned = value.replace(/\s/g, '').toUpperCase();
-		if (cleaned.length <= 3) {
-			return cleaned;
-		}
+		if (cleaned.length <= 3) return cleaned;
 		return cleaned.slice(0, 3) + ' ' + cleaned.slice(3, 6);
 	}
 
@@ -48,7 +36,6 @@
 
 	async function joinGame() {
 		if (!codeInput.trim() || !playerName.trim()) return;
-
 		isJoining = true;
 		errorMessage = '';
 
@@ -61,13 +48,13 @@
 				.single();
 
 			if (roomError || !room) {
-				errorMessage = "Ce code de salon n'existe pas. Vérifiez le code et réessayez.";
+				errorMessage = "Ce code de salon n'existe pas.";
 				isJoining = false;
 				return;
 			}
 
 			if (room.status === 'finished') {
-				errorMessage = 'Cette partie est terminée. Vous ne pouvez plus la rejoindre.';
+				errorMessage = 'Cette partie est déjà terminée.';
 				isJoining = false;
 				return;
 			}
@@ -80,20 +67,14 @@
 				.single();
 
 			if (existingPlayer) {
-				errorMessage = 'Un joueur avec ce pseudonyme existe déjà dans ce salon.';
+				errorMessage = 'Ce pseudo est déjà pris dans ce salon.';
 				isJoining = false;
 				return;
 			}
 
 			const { data: player, error: playerError } = await supabase
 				.from('players')
-				.insert([
-					{
-						room_id: room.id,
-						name: playerName.trim(),
-						is_host: false
-					}
-				])
+				.insert([{ room_id: room.id, name: playerName.trim(), is_host: false }])
 				.select()
 				.single();
 
@@ -105,91 +86,118 @@
 			localStorage.setItem('bingo_player_id', player.id);
 			localStorage.setItem('bingo_player_name', playerName.trim());
 
-			const newPlayer = {
-				id: player.id,
-				pseudo: playerName.trim(),
-				photo: profilImg,
-				isHost: false
-			};
-
-			players.set([newPlayer]);
+			players.set([{ id: player.id, pseudo: playerName.trim(), photo: profilImg, isHost: false }]);
 			isHost.set(false);
-
 			useStar.set(room.use_star);
-
 			goto('/salon');
 		} catch (error) {
-			console.error('Erreur lors de la connexion au salon:', error);
-			errorMessage = 'Une erreur est survenue. Réessayez.';
+			errorMessage = 'Une erreur est survenue.';
 		} finally {
 			isJoining = false;
 		}
 	}
 
-	$: isFormValid = codeInput.trim() && playerName.trim();
+	$: isFormValid = codeInput.trim().length >= 7 && playerName.trim();
 </script>
 
-<div
-	class="flex min-h-screen flex-col items-center overflow-y-auto bg-linear-to-br from-blue-400 via-purple-500 to-pink-500 p-4 pt-20"
->
-	<BackButton />
+<div class="relative min-h-screen bg-slate-50 font-sans text-slate-900">
+	<header class="flex h-20 items-center px-6">
+		<BackButton />
+	</header>
 
-	<div bind:this={formRef} class="flex w-full max-w-md flex-1 flex-col justify-center py-8">
-		<div class="rounded-3xl border-4 border-white bg-white/90 p-8 shadow-2xl backdrop-blur-sm">
-			<h1
-				class="bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text pb-7 text-center text-5xl font-black text-transparent"
-			>
-				Rejoindre
-			</h1>
+	<main class="flex flex-col items-center justify-center p-6 pb-20">
+		<div bind:this={formRef} class="w-full max-w-lg">
+			<div class="mb-10 text-center">
+				<h1 class="text-4xl font-black tracking-tight text-slate-900 md:text-5xl">
+					Rejoindre<span class="text-blue-600">.</span>
+				</h1>
+				<p class="mt-2 text-slate-500">Saisissez le code pour entrer dans la partie.</p>
+			</div>
 
-			{#if errorMessage}
-				<div class="mb-4 rounded-xl border-2 border-red-400 bg-red-100 p-3 text-sm text-red-700">
-					{errorMessage}
+			<div class="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+				{#if errorMessage}
+					<div
+						class="mb-6 rounded-xl border border-red-100 bg-red-50 p-4 text-sm font-medium text-red-600"
+					>
+						{errorMessage}
+					</div>
+				{/if}
+
+				<div class="space-y-6">
+					<div class="space-y-2">
+						<label for="gameCode" class="text-xs font-bold tracking-wider text-slate-400 uppercase">
+							Code du salon
+						</label>
+						<input
+							id="gameCode"
+							type="text"
+							value={codeInput}
+							oninput={handleCodeInput}
+							placeholder="XXX XXX"
+							maxlength="7"
+							disabled={isJoining}
+							class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4 text-center text-3xl font-black tracking-widest uppercase transition-all outline-none placeholder:text-slate-200 focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10 disabled:opacity-50"
+						/>
+					</div>
+
+					<div class="space-y-2">
+						<label
+							for="playerName"
+							class="text-xs font-bold tracking-wider text-slate-400 uppercase"
+						>
+							Votre pseudonyme
+						</label>
+						<input
+							id="playerName"
+							type="text"
+							bind:value={playerName}
+							placeholder="Ex: Marie"
+							disabled={isJoining}
+							class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4 text-lg font-semibold transition-all outline-none focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10 disabled:opacity-50"
+						/>
+					</div>
+
+					<div class="pt-2">
+						<button
+							onclick={joinGame}
+							disabled={!isFormValid || isJoining}
+							class="group relative w-full overflow-hidden rounded-2xl bg-slate-900 py-5 text-lg font-bold text-white transition-all hover:bg-blue-600 active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400"
+						>
+							<span class="relative z-10 flex items-center justify-center gap-2">
+								{#if isJoining}
+									<svg
+										class="h-5 w-5 animate-spin text-white"
+										xmlns="http://www.w3.org/2000/svg"
+										fill="none"
+										viewBox="0 0 24 24"
+									>
+										<circle
+											class="opacity-25"
+											cx="12"
+											cy="12"
+											r="10"
+											stroke="currentColor"
+											stroke-width="4"
+										></circle>
+										<path
+											class="opacity-75"
+											fill="currentColor"
+											d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+										></path>
+									</svg>
+									Connexion...
+								{:else}
+									Rejoindre le salon
+								{/if}
+							</span>
+						</button>
+					</div>
 				</div>
-			{/if}
-
-			<div class="mb-6">
-				<label for="gameCode" class="mb-2 block text-xl font-bold text-gray-700">
-					Code du salon
-				</label>
-				<input
-					id="gameCode"
-					type="text"
-					value={codeInput}
-					oninput={handleCodeInput}
-					placeholder="XXX XXX"
-					maxlength="7"
-					disabled={isJoining}
-					class="w-full rounded-2xl border-4 border-gray-200 bg-white px-4 py-4 text-center text-2xl font-bold text-gray-800 uppercase transition-all focus:border-blue-500 focus:ring-4 focus:ring-blue-200 focus:outline-none disabled:opacity-50"
-					onkeypress={(e) => e.key === 'Enter' && document.getElementById('playerName')?.focus()}
-				/>
 			</div>
 
-			<div class="mb-6">
-				<label for="playerName" class="mb-2 block text-xl font-bold text-gray-700">
-					Votre pseudonyme
-				</label>
-				<input
-					id="playerName"
-					type="text"
-					bind:value={playerName}
-					placeholder="Ex: Marie"
-					disabled={isJoining}
-					class="w-full rounded-2xl border-4 border-gray-200 bg-white px-4 py-4 text-center text-2xl font-bold text-gray-800 transition-all focus:border-blue-500 focus:ring-4 focus:ring-blue-200 focus:outline-none disabled:opacity-50"
-					onkeypress={(e) => e.key === 'Enter' && joinGame()}
-				/>
-			</div>
-
-			<button
-				onclick={joinGame}
-				disabled={!isFormValid || isJoining}
-				class="w-full transform cursor-pointer rounded-2xl border-4 border-white bg-linear-to-r from-blue-400 to-purple-500 px-8 py-4 text-2xl font-black text-white shadow-[0_8px_0_rgba(0,0,0,0.3)] transition-all disabled:cursor-not-allowed disabled:opacity-50 {isFormValid &&
-				!isJoining
-					? 'hover:scale-105 hover:shadow-[0_12px_0_rgba(0,0,0,0.3)] active:scale-95 active:shadow-none'
-					: ''}"
-			>
-				{isJoining ? 'CONNEXION...' : 'REJOINDRE LE SALON'}
-			</button>
+			<p class="mt-8 text-center text-xs text-slate-400 md:text-sm">
+				Pas de code ? Demandez à l'hôte de la partie de vous le partager.
+			</p>
 		</div>
-	</div>
+	</main>
 </div>
