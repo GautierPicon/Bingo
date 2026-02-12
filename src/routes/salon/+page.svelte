@@ -21,6 +21,7 @@
 	let isStartingGame = false;
 	let pollingInterval = null;
 	let winnerName = '';
+	let hasGrid = false;
 
 	onMount(async () => {
 		currentPlayerId = localStorage.getItem('bingo_player_id') || '';
@@ -29,6 +30,7 @@
 		roomId = localStorage.getItem('bingo_room_id') || '';
 
 		await loadPlayers();
+		await checkIfGridExists();
 
 		subscribeToPlayers();
 		subscribeToRoomStatus();
@@ -83,6 +85,18 @@
 			clearInterval(pollingInterval);
 		}
 	});
+
+	async function checkIfGridExists() {
+		if (!roomId) return;
+
+		const { data, error } = await supabase
+			.from('grids')
+			.select('id')
+			.eq('room_id', roomId)
+			.single();
+
+		hasGrid = !error && data;
+	}
 
 	async function loadPlayers() {
 		if (!roomId) return;
@@ -279,6 +293,12 @@
 	async function startGame() {
 		if (!roomId || isStartingGame) return;
 
+		if (!hasGrid) {
+			alert("Veuillez d'abord personnaliser la grille avant de lancer la partie.");
+			goto('/grille');
+			return;
+		}
+
 		isStartingGame = true;
 
 		try {
@@ -305,6 +325,10 @@
 			console.error('Erreur lors du lancement:', error);
 			isStartingGame = false;
 		}
+	}
+
+	function editGrid() {
+		goto('/grille');
 	}
 
 	async function copyCode() {
@@ -477,13 +501,45 @@
 				</div>
 
 				{#if $isHost}
-					<button
-						onclick={startGame}
-						disabled={isStartingGame || players.length < 1}
-						class="w-full rounded-2xl bg-slate-900 py-5 text-lg font-bold text-white transition-all hover:bg-indigo-600 active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"
-					>
-						{isStartingGame ? 'Préparation...' : 'Lancer la partie'}
-					</button>
+					<div class="space-y-3">
+						{#if hasGrid}
+							<button
+								onclick={editGrid}
+								class="w-full rounded-2xl border-2 border-slate-200 bg-white py-4 text-base font-semibold text-slate-700 transition-all hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-700 active:scale-[0.98]"
+							>
+								<span class="flex items-center justify-center gap-2">
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										fill="none"
+										viewBox="0 0 24 24"
+										stroke-width="2"
+										stroke="currentColor"
+										class="size-6"
+									>
+										<path
+											stroke-linecap="round"
+											stroke-linejoin="round"
+											d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
+										/>
+									</svg>
+									Modifier la grille
+								</span>
+							</button>
+						{/if}
+						<button
+							onclick={startGame}
+							disabled={isStartingGame || players.length < 1 || !hasGrid}
+							class="w-full rounded-2xl bg-slate-900 py-5 text-lg font-bold text-white transition-all hover:bg-indigo-600 active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"
+						>
+							{#if !hasGrid}
+								Personnaliser la grille d'abord
+							{:else if isStartingGame}
+								Préparation...
+							{:else}
+								Lancer la partie
+							{/if}
+						</button>
+					</div>
 				{:else}
 					<div
 						class="flex items-center justify-center gap-3 rounded-2xl border border-slate-100 bg-slate-50 py-5 text-slate-500"

@@ -6,11 +6,7 @@
 	import BackButton from '$lib/components/BackButton.svelte';
 	import { supabase } from '$lib/supabase';
 
-	let grid = Array.from({ length: 25 }, (_, i) => ({
-		id: i + 1,
-		checked: false
-	}));
-
+	let grid = [];
 	let cellRefs = Array.from({ length: 25 }, () => null);
 	let bingoButtonRef = null;
 	let groupName = '';
@@ -32,6 +28,8 @@
 			if (!error && room) {
 				useStar.set(room.use_star);
 			}
+
+			await loadGrid();
 		}
 
 		if (!$hasPlayedGridAnimation) {
@@ -67,6 +65,27 @@
 			clearInterval(pollingInterval);
 		}
 	});
+
+	async function loadGrid() {
+		const { data, error } = await supabase
+			.from('grids')
+			.select('cells')
+			.eq('room_id', roomId)
+			.single();
+
+		if (!error && data) {
+			grid = data.cells.map((cell) => ({
+				...cell,
+				checked: false
+			}));
+		} else {
+			grid = Array.from({ length: 25 }, (_, i) => ({
+				id: i + 1,
+				text: String(i + 1),
+				checked: false
+			}));
+		}
+	}
 
 	async function checkRoomStatus() {
 		if (!roomId) return;
@@ -297,7 +316,7 @@
 							bind:this={cellRefs[index]}
 							onclick={() => !isCenter && toggleCell(index)}
 							disabled={isCenter}
-							class="relative flex aspect-square cursor-pointer items-center justify-center rounded-2xl border text-xl font-black transition-all md:text-2xl
+							class="relative flex aspect-square cursor-pointer items-center justify-center rounded-2xl border text-xs font-black transition-all md:text-sm
                                 {isCenter || isChecked
 								? 'scale-[0.98] border-indigo-600 bg-indigo-600 text-white shadow-lg shadow-indigo-200'
 								: 'border-slate-100 bg-slate-50 text-slate-400 hover:border-indigo-300 hover:bg-white hover:text-indigo-600 hover:shadow-md active:scale-95'}
@@ -317,7 +336,9 @@
 									/>
 								</svg>
 							{:else}
-								{cell.id}
+								<span class="px-1 text-xs text-center leading-tight wrap-break-word">
+									{cell.text}
+								</span>
 							{/if}
 
 							{#if isChecked && !isCenter}
@@ -329,7 +350,6 @@
 			</div>
 
 			<div class="relative pt-4">
-
 				<button
 					bind:this={bingoButtonRef}
 					onclick={reset}
