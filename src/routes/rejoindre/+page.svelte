@@ -161,7 +161,7 @@
 						<button
 							onclick={joinGame}
 							disabled={!isFormValid || isJoining}
-							class="group relative w-full overflow-hidden rounded-2xl bg-slate-900 py-5 text-lg font-bold text-white transition-all hover:bg-indigo-600 active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400"
+							class="group relative w-full cursor-pointer overflow-hidden rounded-2xl bg-slate-900 py-5 text-lg font-bold text-white transition-all hover:bg-indigo-600 active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400"
 						>
 							<span class="relative z-10 flex items-center justify-center gap-2">
 								{#if isJoining}
