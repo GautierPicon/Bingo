@@ -11,10 +11,12 @@
 	let bingoButtonRef = null;
 	let roomSubscription = null;
 	let roomId = '';
+	let playerId = '';
 	let pollingInterval = null;
 
 	onMount(async () => {
 		roomId = localStorage.getItem('bingo_room_id') || '';
+		playerId = localStorage.getItem('bingo_player_id') || '';
 
 		if (roomId) {
 			const { data: room, error } = await supabase
@@ -69,6 +71,7 @@
 			.from('grids')
 			.select('cells')
 			.eq('room_id', roomId)
+			.eq('player_id', playerId)
 			.single();
 
 		if (!error && data) {

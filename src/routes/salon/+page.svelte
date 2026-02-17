@@ -3,7 +3,7 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import gsap from 'gsap';
-	import { isHost } from '../store';
+	import { isHost, useStar } from '../store';
 	import { supabase } from '$lib/supabase';
 	import { getProfilePictureByName } from '$lib/utils/profilePictures';
 
@@ -285,6 +285,27 @@
 		return player.id === currentPlayerId;
 	}
 
+	function shuffleGrid(cells, useStar) {
+		const indicesToShuffle = [];
+		for (let i = 0; i < cells.length; i++) {
+			if (!(useStar && i === 12)) {
+				indicesToShuffle.push(i);
+			}
+		}
+
+		for (let i = indicesToShuffle.length - 1; i > 0; i--) {
+			const j = Math.floor(Math.random() * (i + 1));
+			[indicesToShuffle[i], indicesToShuffle[j]] = [indicesToShuffle[j], indicesToShuffle[i]];
+		}
+
+		const shuffledCells = cells.map((cell, index) => ({
+			...cell,
+			text: cells[indicesToShuffle[index]]?.text ?? cell.text
+		}));
+
+		return shuffledCells;
+	}
+
 	async function startGame() {
 		if (!roomId || isStartingGame) return;
 
@@ -297,6 +318,47 @@
 		isStartingGame = true;
 
 		try {
+			const { data: masterGrid, error: gridError } = await supabase
+				.from('grids')
+				.select('cells')
+				.eq('room_id', roomId)
+				.single();
+
+			if (gridError || !masterGrid) {
+				console.error('Erreur lors du chargement de la grille:', gridError);
+				isStartingGame = false;
+				return;
+			}
+
+			const { data: allPlayers, error: playersError } = await supabase
+				.from('players')
+				.select('id')
+				.eq('room_id', roomId);
+
+			if (playersError) {
+				console.error('Erreur lors du chargement des joueurs:', playersError);
+				isStartingGame = false;
+				return;
+			}
+
+			const { error: deleteError } = await supabase.from('grids').delete().eq('room_id', roomId);
+
+			if (deleteError) {
+				console.error('Erreur lors de la suppression des anciennes grilles:', deleteError);
+			}
+
+			for (const player of allPlayers) {
+				const shuffledCells = shuffleGrid(masterGrid.cells, $useStar);
+
+				await supabase.from('grids').insert([
+					{
+						room_id: roomId,
+						player_id: player.id,
+						cells: shuffledCells
+					}
+				]);
+			}
+
 			const { error } = await supabase
 				.from('rooms')
 				.update({ status: 'playing', winner_id: null })
