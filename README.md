@@ -67,43 +67,42 @@ Add a .env.local file based on this template and replace the variables with your
 
 In SQL Editor, create this query and run it
 
-```SQl
-create table rooms (
-  id uuid default gen_random_uuid() primary key,
-  code text unique not null,
-  name text not null,
-  use_star boolean default false,
-  host_id uuid,
+```sql
+-- Enable UUID extension
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
-  winner_id uuid references players(id),
-
-  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
-  status text default 'waiting'
-    check (status in ('waiting', 'playing'))
+-- Rooms table
+CREATE TABLE rooms (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  code VARCHAR(6) UNIQUE NOT NULL,
+  use_star BOOLEAN DEFAULT false,
+  status VARCHAR DEFAULT 'waiting',
+  winner_id UUID
 );
 
-create table players (
-  id uuid default gen_random_uuid() primary key,
-  room_id uuid references rooms(id) on delete cascade,
-  name text not null,
-  is_host boolean default false,
-  joined_at timestamp with time zone default timezone('utc'::text, now()) not null
+-- Players table
+CREATE TABLE players (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  room_id UUID NOT NULL REFERENCES rooms(id) ON DELETE CASCADE,
+  name VARCHAR NOT NULL,
+  is_host BOOLEAN DEFAULT false,
+  profile_picture VARCHAR,
+  joined_at TIMESTAMP DEFAULT NOW()
 );
 
-create table grids (
-  id uuid default gen_random_uuid() primary key,
-  player_id uuid references players(id) on delete cascade,
-  room_id uuid references rooms(id) on delete cascade,
-  cells jsonb not null,
-  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+-- Grids table
+CREATE TABLE grids (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  room_id UUID NOT NULL REFERENCES rooms(id) ON DELETE CASCADE,
+  player_id UUID NOT NULL REFERENCES players(id) ON DELETE CASCADE,
+  cells JSONB NOT NULL
 );
 
-create index idx_players_room_id on players(room_id);
-create index idx_grids_player_id on grids(player_id);
-create index idx_grids_room_id on grids(room_id);
-create index idx_rooms_code on rooms(code);
+-- Add winner foreign key
+ALTER TABLE rooms ADD CONSTRAINT fk_winner FOREIGN KEY (winner_id) REFERENCES players(id) ON DELETE SET NULL;
 
-alter publication supabase_realtime add table rooms;
-alter publication supabase_realtime add table players;
-alter publication supabase_realtime add table grids;
+-- Enable realtime
+ALTER PUBLICATION supabase_realtime ADD TABLE rooms;
+ALTER PUBLICATION supabase_realtime ADD TABLE players;
+ALTER PUBLICATION supabase_realtime ADD TABLE grids;
 ```
