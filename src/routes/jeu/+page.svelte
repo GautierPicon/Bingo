@@ -307,7 +307,7 @@
 			<div
 				class="relative rounded-3xl border border-slate-200 bg-white p-4 shadow-xl shadow-slate-200/50"
 			>
-				<div class="grid grid-cols-5 gap-2 md:gap-3">
+				<div class="grid grid-cols-5 gap-1.5 md:gap-3">
 					{#each grid as cell, index (cell.id)}
 						{@const isChecked = isCellChecked(cell, index)}
 						{@const isCenter = $useStar && isCenterCell(index)}
@@ -316,7 +316,7 @@
 							bind:this={cellRefs[index]}
 							onclick={() => !isCenter && toggleCell(index)}
 							disabled={isCenter}
-							class="relative flex aspect-square cursor-pointer items-center justify-center rounded-2xl border text-xs font-black transition-all md:text-sm
+							class="relative flex aspect-square cursor-pointer items-center justify-center overflow-hidden rounded-2xl border p-1 font-black transition-all
                                 {isCenter || isChecked
 								? 'scale-[0.98] border-indigo-600 bg-indigo-600 text-white shadow-lg shadow-indigo-200'
 								: 'border-slate-100 bg-slate-50 text-slate-400 hover:border-indigo-300 hover:bg-white hover:text-indigo-600 hover:shadow-md active:scale-95'}
@@ -327,7 +327,7 @@
 									xmlns="http://www.w3.org/2000/svg"
 									viewBox="0 0 24 24"
 									fill="currentColor"
-									class="size-6 md:size-8"
+									class="size-5 md:size-8"
 								>
 									<path
 										fill-rule="evenodd"
@@ -336,13 +336,16 @@
 									/>
 								</svg>
 							{:else}
-								<span class="px-1 text-xs text-center leading-tight wrap-break-word">
+								<span
+									class="w-full text-center leading-tight wrap-break-word hyphens-auto"
+									style="font-size: clamp(0.4rem, 2.5vw, 0.7rem); word-break: break-word; overflow-wrap: anywhere;"
+								>
 									{cell.text}
 								</span>
 							{/if}
 
 							{#if isChecked && !isCenter}
-								<div class="absolute top-1.5 right-1.5 size-1.5 rounded-full bg-white/50"></div>
+								<div class="absolute top-1 right-1 size-1.5 rounded-full bg-white/50"></div>
 							{/if}
 						</button>
 					{/each}
