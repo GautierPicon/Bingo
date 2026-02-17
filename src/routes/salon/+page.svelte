@@ -4,7 +4,7 @@
 	import gsap from 'gsap';
 	import { isHost } from '../store';
 	import { supabase } from '$lib/supabase';
-	import profilImg from '$lib/assets/profil.png';
+	import { getProfilePictureByName } from '$lib/utils/profilePictures';
 
 	let salonRef = null;
 	let playerRefs = [];
@@ -111,7 +111,7 @@
 		players = data.map((player) => ({
 			id: player.id,
 			pseudo: player.name,
-			photo: profilImg,
+			photo: getProfilePictureByName(player.profile_picture),
 			isHost: player.is_host
 		}));
 	}
@@ -232,7 +232,7 @@
 						const newPlayer = {
 							id: payload.new.id,
 							pseudo: payload.new.name,
-							photo: profilImg,
+							photo: getProfilePictureByName(payload.new.profile_picture),
 							isHost: payload.new.is_host
 						};
 						players = [...players, newPlayer];

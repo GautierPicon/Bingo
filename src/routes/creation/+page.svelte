@@ -4,7 +4,7 @@
 	import gsap from 'gsap';
 	import { useStar, players, isHost } from '../store';
 	import { supabase } from '$lib/supabase';
-	import profilImg from '$lib/assets/profil.png';
+	import { getRandomProfilePictureName, getProfilePictureByName } from '$lib/utils/profilePictures';
 
 	let formRef = null;
 	let groupName = '';
@@ -53,13 +53,16 @@
 
 			if (roomError) throw roomError;
 
+			const profilePictureName = getRandomProfilePictureName();
+
 			const { data: player, error: playerError } = await supabase
 				.from('players')
 				.insert([
 					{
 						room_id: room.id,
 						name: playerName.trim(),
-						is_host: true
+						is_host: true,
+						profile_picture: profilePictureName
 					}
 				])
 				.select()
@@ -73,7 +76,14 @@
 			localStorage.setItem('bingo_player_id', player.id);
 			localStorage.setItem('bingo_player_name', playerName.trim());
 
-			players.set([{ id: player.id, pseudo: playerName.trim(), photo: profilImg, isHost: true }]);
+			players.set([
+				{
+					id: player.id,
+					pseudo: playerName.trim(),
+					photo: getProfilePictureByName(profilePictureName),
+					isHost: true
+				}
+			]);
 			isHost.set(true);
 			goto('/grille');
 		} catch {

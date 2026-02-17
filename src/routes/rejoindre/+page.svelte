@@ -4,7 +4,7 @@
 	import gsap from 'gsap';
 	import { useStar, players, isHost } from '../store';
 	import { supabase } from '$lib/supabase';
-	import profilImg from '$lib/assets/profil.png';
+	import { getRandomProfilePictureName, getProfilePictureByName } from '$lib/utils/profilePictures';
 
 	let formRef = null;
 	let codeInput = '';
@@ -71,9 +71,18 @@
 				return;
 			}
 
+			const profilePictureName = getRandomProfilePictureName();
+
 			const { data: player, error: playerError } = await supabase
 				.from('players')
-				.insert([{ room_id: room.id, name: playerName.trim(), is_host: false }])
+				.insert([
+					{
+						room_id: room.id,
+						name: playerName.trim(),
+						is_host: false,
+						profile_picture: profilePictureName
+					}
+				])
 				.select()
 				.single();
 
@@ -85,7 +94,14 @@
 			localStorage.setItem('bingo_player_id', player.id);
 			localStorage.setItem('bingo_player_name', playerName.trim());
 
-			players.set([{ id: player.id, pseudo: playerName.trim(), photo: profilImg, isHost: false }]);
+			players.set([
+				{
+					id: player.id,
+					pseudo: playerName.trim(),
+					photo: getProfilePictureByName(profilePictureName),
+					isHost: false
+				}
+			]);
 			isHost.set(false);
 			useStar.set(room.use_star);
 			goto('/salon');
