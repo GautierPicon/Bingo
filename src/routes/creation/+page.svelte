@@ -7,7 +7,6 @@
 	import { getRandomProfilePictureName, getProfilePictureByName } from '$lib/utils/profilePictures';
 
 	let formRef = null;
-	let groupName = '';
 	let playerName = '';
 	let isCreating = false;
 	let errorMessage = '';
@@ -33,7 +32,7 @@
 	}
 
 	async function createGame() {
-		if (!groupName.trim() || !playerName.trim()) return;
+		if (!playerName.trim()) return;
 		isCreating = true;
 		errorMessage = '';
 		try {
@@ -43,7 +42,6 @@
 				.insert([
 					{
 						code: roomCode.replace(' ', ''),
-						name: groupName.trim(),
 						use_star: $useStar,
 						status: 'waiting'
 					}
@@ -72,7 +70,6 @@
 
 			localStorage.setItem('bingo_room_id', room.id);
 			localStorage.setItem('bingo_room_code', roomCode);
-			localStorage.setItem('bingo_group_name', groupName.trim());
 			localStorage.setItem('bingo_player_id', player.id);
 			localStorage.setItem('bingo_player_name', playerName.trim());
 
@@ -93,7 +90,7 @@
 		}
 	}
 
-	$: isFormValid = groupName.trim() && playerName.trim();
+	$: isFormValid = playerName.trim();
 </script>
 
 <div
@@ -124,23 +121,6 @@
 				{/if}
 
 				<div class="space-y-6">
-					<div class="space-y-2">
-						<label
-							for="groupName"
-							class="text-xs font-bold tracking-wider text-slate-400 uppercase"
-						>
-							Nom du salon
-						</label>
-						<input
-							id="groupName"
-							type="text"
-							bind:value={groupName}
-							placeholder="Ex: Soirée entre amis"
-							disabled={isCreating}
-							class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4 text-lg font-semibold transition-all outline-none focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 disabled:opacity-50 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-indigo-500 dark:focus:bg-slate-600"
-						/>
-					</div>
-
 					<div class="space-y-2">
 						<label
 							for="playerName"

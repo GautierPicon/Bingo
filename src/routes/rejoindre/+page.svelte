@@ -90,7 +90,6 @@
 
 			localStorage.setItem('bingo_room_id', room.id);
 			localStorage.setItem('bingo_room_code', codeInput);
-			localStorage.setItem('bingo_group_name', room.name);
 			localStorage.setItem('bingo_player_id', player.id);
 			localStorage.setItem('bingo_player_name', playerName.trim());
 

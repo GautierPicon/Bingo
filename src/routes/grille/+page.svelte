@@ -15,12 +15,10 @@
 	let errorMessage = '';
 	let roomId = '';
 	let playerId = '';
-	let groupName = '';
 
 	onMount(() => {
 		roomId = localStorage.getItem('bingo_room_id') || '';
 		playerId = localStorage.getItem('bingo_player_id') || '';
-		groupName = localStorage.getItem('bingo_group_name') || 'Partie';
 
 		if (!roomId || !playerId) {
 			goto('/');
@@ -128,9 +126,7 @@
 				>
 					Personnaliser la grille<span class="text-indigo-600">.</span>
 				</h1>
-				<p class="mt-2 text-slate-500 dark:text-slate-400">
-					Définissez le contenu de chaque case pour {groupName}
-				</p>
+				<p class="mt-2 text-slate-500 dark:text-slate-400">Définissez le contenu de chaque case.</p>
 			</div>
 
 			<div

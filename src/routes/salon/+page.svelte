@@ -9,7 +9,6 @@
 	let salonRef = null;
 	let playerRefs = [];
 	let currentPlayerId = '';
-	let groupName = '';
 	let roomCode = '';
 	let roomId = '';
 	let players = [];
@@ -23,7 +22,6 @@
 
 	onMount(async () => {
 		currentPlayerId = localStorage.getItem('bingo_player_id') || '';
-		groupName = localStorage.getItem('bingo_group_name') || 'Partie';
 		roomCode = localStorage.getItem('bingo_room_code') || 'XXX XXX';
 		roomId = localStorage.getItem('bingo_room_id') || '';
 
@@ -374,7 +372,7 @@
 				<h1
 					class="mt-4 text-4xl font-black tracking-tight text-slate-900 md:text-6xl dark:text-slate-100"
 				>
-					{groupName}<span class="text-indigo-600">.</span>
+					Salon<span class="text-indigo-600">.</span>
 				</h1>
 			</div>
 
