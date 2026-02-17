@@ -5,6 +5,7 @@
 	import BackButton from '$lib/components/BackButton.svelte';
 	import { useStar } from '../store';
 	import { supabase } from '$lib/supabase';
+	import ideas from '$lib/data/ideas.json';
 
 	let formRef = null;
 	let cells = Array.from({ length: 25 }, (_, i) => ({
@@ -81,13 +82,13 @@
 
 				if (error) throw error;
 			} else {
-				const { error } = await supabase
-					.from('grids')
-					.insert([{
+				const { error } = await supabase.from('grids').insert([
+					{
 						room_id: roomId,
 						player_id: playerId,
 						cells: cells
-					}]);
+					}
+				]);
 
 				if (error) throw error;
 			}
@@ -102,34 +103,6 @@
 	}
 
 	function generateRandomIdeas() {
-		const ideas = [
-			'Quelqu\'un arrive en retard',
-			'Discussion politique',
-			'Anecdote d\'enfance',
-			'Selfie de groupe',
-			'Rire incontrôlable',
-			'Chanson karaoké',
-			'Danse improvisée',
-			'Jeu de société',
-			'Citation de film',
-			'Blague nulle',
-			'Compliment inattendu',
-			'Silence gênant',
-			'Photo vintage',
-			'Histoire embarrassante',
-			'Imitation parfaite',
-			'Fou rire collectif',
-			'Débat passionné',
-			'Câlin de groupe',
-			'Toast improvisé',
-			'Moment nostalgique',
-			'Facepalm collectif',
-			'Référence obscure',
-			'Moment genant',
-			'High five manqué',
-            'Contre soirée'
-		];
-
 		const shuffled = [...ideas].sort(() => Math.random() - 0.5);
 		cells = cells.map((cell, index) => {
 			if ($useStar && isCenterCell(index)) {
@@ -200,10 +173,7 @@
 					{#each cells as cell, index (cell.id)}
 						{@const isCenter = $useStar && isCenterCell(index)}
 						<div class="space-y-1">
-							<label
-								for="cell-{cell.id}"
-								class="block text-xs font-bold text-slate-400"
-							>
+							<label for="cell-{cell.id}" class="block text-xs font-bold text-slate-400">
 								Case {cell.id}
 							</label>
 							{#if isCenter}
@@ -241,7 +211,7 @@
 				<button
 					onclick={saveGrid}
 					disabled={!isFormValid || isSaving}
-					class="cursor-pointer w-full rounded-2xl bg-slate-900 py-5 text-lg font-bold text-white transition-all hover:bg-indigo-600 active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400"
+					class="w-full cursor-pointer rounded-2xl bg-slate-900 py-5 text-lg font-bold text-white transition-all hover:bg-indigo-600 active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400"
 				>
 					<span class="flex items-center justify-center gap-2">
 						{#if isSaving}
