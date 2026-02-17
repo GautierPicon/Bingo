@@ -3,19 +3,16 @@
 	import { goto } from '$app/navigation';
 	import { useStar, hasPlayedGridAnimation } from '../store';
 	import gsap from 'gsap';
-	import BackButton from '$lib/components/BackButton.svelte';
 	import { supabase } from '$lib/supabase';
 
 	let grid = [];
 	let cellRefs = Array.from({ length: 25 }, () => null);
 	let bingoButtonRef = null;
-	let groupName = '';
 	let roomSubscription = null;
 	let roomId = '';
 	let pollingInterval = null;
 
 	onMount(async () => {
-		groupName = localStorage.getItem('bingo_group_name') || 'Partie';
 		roomId = localStorage.getItem('bingo_room_id') || '';
 
 		if (roomId) {
@@ -290,12 +287,10 @@
 	}
 </script>
 
-<div class="relative min-h-screen bg-slate-50 font-sans text-slate-900">
-	<div class="h-20 px-6">
-		<BackButton />
-	</div>
-
-	<main class="flex flex-col items-center p-4 pb-20">
+<div
+	class="relative min-h-screen bg-slate-50 font-sans text-slate-900 dark:bg-slate-900 dark:text-slate-100"
+>
+	<main class="flex flex-col items-center p-4 pt-20 pb-20">
 		<div class="w-full max-w-md space-y-8">
 			<div class="text-center">
 				<h2 class="text-xs font-black tracking-[0.3em] text-indigo-600 uppercase">
@@ -305,7 +300,7 @@
 			</div>
 
 			<div
-				class="relative rounded-3xl border border-slate-200 bg-white p-4 shadow-xl shadow-slate-200/50"
+				class="relative rounded-3xl border border-slate-200 bg-white p-4 shadow-xl shadow-slate-200/50 dark:border-slate-700 dark:bg-slate-800 dark:shadow-slate-900/50"
 			>
 				<div class="grid grid-cols-5 gap-1.5 md:gap-3">
 					{#each grid as cell, index (cell.id)}
@@ -319,7 +314,7 @@
 							class="relative flex aspect-square cursor-pointer items-center justify-center overflow-hidden rounded-2xl border p-1 font-black transition-all
                                 {isCenter || isChecked
 								? 'scale-[0.98] border-indigo-600 bg-indigo-600 text-white shadow-lg shadow-indigo-200'
-								: 'border-slate-100 bg-slate-50 text-slate-400 hover:border-indigo-300 hover:bg-white hover:text-indigo-600 hover:shadow-md active:scale-95'}
+								: 'border-slate-100 bg-slate-50 text-slate-400 hover:border-indigo-300 hover:bg-white hover:text-indigo-600 hover:shadow-md active:scale-95 dark:border-slate-700 dark:bg-slate-700 dark:text-slate-400 dark:hover:border-indigo-500 dark:hover:bg-slate-600 dark:hover:text-indigo-400'}
                                 {isCenter ? 'cursor-not-allowed opacity-100' : ''}"
 						>
 							{#if isCenter}
@@ -358,9 +353,9 @@
 					onclick={reset}
 					disabled={!winner}
 					class="group relative w-full overflow-hidden rounded-3xl py-6 text-2xl font-black tracking-tighter transition-all active:scale-95
-        			{winner
-						? 'cursor-pointer bg-yellow-500 text-white shadow-2xl shadow-yellow-200 hover:bg-yellow-400'
-						: 'cursor-not-allowed bg-slate-200 text-slate-400'}"
+         			{winner
+						? 'cursor-pointer bg-yellow-500 text-white shadow-2xl shadow-yellow-200 hover:bg-yellow-400 dark:shadow-yellow-900/50'
+						: 'cursor-not-allowed bg-slate-200 text-slate-400 dark:bg-slate-700 dark:text-slate-500'}"
 				>
 					<span
 						class="relative z-10 flex items-center justify-center gap-3

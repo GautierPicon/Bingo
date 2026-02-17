@@ -2,7 +2,6 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import gsap from 'gsap';
-	import BackButton from '$lib/components/BackButton.svelte';
 	import { useStar, players, isHost } from '../store';
 	import { supabase } from '$lib/supabase';
 	import profilImg from '$lib/assets/profil.png';
@@ -90,7 +89,7 @@
 			isHost.set(false);
 			useStar.set(room.use_star);
 			goto('/salon');
-		} catch (error) {
+		} catch {
 			errorMessage = 'Une erreur est survenue.';
 		} finally {
 			isJoining = false;
@@ -100,24 +99,28 @@
 	$: isFormValid = codeInput.trim().length >= 7 && playerName.trim();
 </script>
 
-<div class="relative min-h-screen bg-slate-50 font-sans text-slate-900">
-	<header class="flex h-20 items-center px-6">
-		<BackButton />
-	</header>
-
-	<main class="flex flex-col items-center justify-center p-6 pb-20">
+<div
+	class="relative min-h-screen bg-slate-50 font-sans text-slate-900 dark:bg-slate-900 dark:text-slate-100"
+>
+	<main class="flex flex-col items-center justify-center p-6 pt-20 pb-20">
 		<div bind:this={formRef} class="w-full max-w-lg">
 			<div class="mb-10 text-center">
-				<h1 class="text-4xl font-black tracking-tight text-slate-900 md:text-5xl">
+				<h1
+					class="text-4xl font-black tracking-tight text-slate-900 md:text-5xl dark:text-slate-100"
+				>
 					Rejoindre<span class="text-indigo-600">.</span>
 				</h1>
-				<p class="mt-2 text-slate-500">Saisissez le code pour entrer dans la partie.</p>
+				<p class="mt-2 text-slate-500 dark:text-slate-400">
+					Saisissez le code pour entrer dans la partie.
+				</p>
 			</div>
 
-			<div class="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+			<div
+				class="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm dark:border-slate-700 dark:bg-slate-800"
+			>
 				{#if errorMessage}
 					<div
-						class="mb-6 rounded-xl border border-red-100 bg-red-50 p-4 text-sm font-medium text-red-600"
+						class="mb-6 rounded-xl border border-red-100 bg-red-50 p-4 text-sm font-medium text-red-600 dark:border-red-900/50 dark:bg-red-900/20 dark:text-red-400"
 					>
 						{errorMessage}
 					</div>
@@ -136,7 +139,7 @@
 							placeholder="XXX XXX"
 							maxlength="7"
 							disabled={isJoining}
-							class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4 text-center text-3xl font-black tracking-widest uppercase transition-all outline-none placeholder:text-slate-200 focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 disabled:opacity-50"
+							class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4 text-center text-3xl font-black tracking-widest uppercase transition-all outline-none placeholder:text-slate-200 focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 disabled:opacity-50 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 dark:placeholder:text-slate-600 dark:focus:border-indigo-500 dark:focus:bg-slate-600"
 						/>
 					</div>
 
@@ -153,7 +156,7 @@
 							bind:value={playerName}
 							placeholder="Ex: Marie"
 							disabled={isJoining}
-							class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4 text-lg font-semibold transition-all outline-none focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 disabled:opacity-50"
+							class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4 text-lg font-semibold transition-all outline-none focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 disabled:opacity-50 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-indigo-500 dark:focus:bg-slate-600"
 						/>
 					</div>
 
@@ -161,7 +164,7 @@
 						<button
 							onclick={joinGame}
 							disabled={!isFormValid || isJoining}
-							class="group relative w-full cursor-pointer overflow-hidden rounded-2xl bg-slate-900 py-5 text-lg font-bold text-white transition-all hover:bg-indigo-600 active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400"
+							class="group relative w-full cursor-pointer overflow-hidden rounded-2xl bg-slate-900 py-5 text-lg font-bold text-white transition-all hover:bg-indigo-600 active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400 dark:bg-slate-700 dark:hover:bg-indigo-600 dark:disabled:bg-slate-600 dark:disabled:text-slate-500"
 						>
 							<span class="relative z-10 flex items-center justify-center gap-2">
 								{#if isJoining}
@@ -195,7 +198,7 @@
 				</div>
 			</div>
 
-			<p class="mt-8 text-center text-xs text-slate-400 md:text-sm">
+			<p class="mt-8 text-center text-xs text-slate-400 md:text-sm dark:text-slate-500">
 				Pas de code ? Demandez à l'hôte de la partie de vous le partager.
 			</p>
 		</div>

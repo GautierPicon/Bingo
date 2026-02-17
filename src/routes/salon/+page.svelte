@@ -2,7 +2,6 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { goto } from '$app/navigation';
 	import gsap from 'gsap';
-	import BackButton from '$lib/components/BackButton.svelte';
 	import { isHost } from '../store';
 	import { supabase } from '$lib/supabase';
 	import profilImg from '$lib/assets/profil.png';
@@ -10,7 +9,6 @@
 	let salonRef = null;
 	let playerRefs = [];
 	let currentPlayerId = '';
-	let previousPlayerCount = 0;
 	let groupName = '';
 	let roomCode = '';
 	let roomId = '';
@@ -36,8 +34,6 @@
 		subscribeToRoomStatus();
 		await checkRoomStatus();
 		startPlayersPolling();
-
-		previousPlayerCount = players.length;
 
 		gsap.fromTo(
 			salonRef,
@@ -364,27 +360,29 @@
 	}
 </script>
 
-<div class="relative min-h-screen bg-slate-50 font-sans text-slate-900">
-	<header class="flex h-20 items-center px-6">
-		<BackButton />
-	</header>
-
-	<main class="flex flex-col items-center p-6 pb-20">
+<div
+	class="relative min-h-screen bg-slate-50 font-sans text-slate-900 dark:bg-slate-900 dark:text-slate-100"
+>
+	<main class="flex flex-col items-center p-6 pt-20 pb-20">
 		<div bind:this={salonRef} class="w-full max-w-2xl">
 			<div class="mb-8 text-center">
 				<span
-					class="inline-block rounded-full bg-indigo-100 px-4 py-1 text-xs font-bold tracking-widest text-indigo-700 uppercase"
+					class="inline-block rounded-full bg-indigo-100 px-4 py-1 text-xs font-bold tracking-widest text-indigo-700 uppercase dark:bg-indigo-900/50 dark:text-indigo-300"
 				>
 					Salon d'attente
 				</span>
-				<h1 class="mt-4 text-4xl font-black tracking-tight text-slate-900 md:text-6xl">
+				<h1
+					class="mt-4 text-4xl font-black tracking-tight text-slate-900 md:text-6xl dark:text-slate-100"
+				>
 					{groupName}<span class="text-indigo-600">.</span>
 				</h1>
 			</div>
 
-			<div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm md:p-10">
+			<div
+				class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm md:p-10 dark:border-slate-700 dark:bg-slate-800"
+			>
 				<div
-					class="mb-10 flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-6"
+					class="mb-10 flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-6 dark:border-slate-600 dark:bg-slate-700/50"
 				>
 					<p class="text-xs font-bold tracking-widest text-slate-400 uppercase">
 						Code d'invitation
@@ -393,11 +391,13 @@
 						onclick={copyCode}
 						class="group mt-2 flex cursor-pointer items-center gap-3 transition-transform active:scale-95"
 					>
-						<span class="text-4xl font-black tracking-[0.2em] text-slate-800 md:text-5xl">
+						<span
+							class="text-4xl font-black tracking-[0.2em] text-slate-800 md:text-5xl dark:text-slate-100"
+						>
 							{roomCode}
 						</span>
 						<div
-							class="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-400 shadow-sm transition-colors group-hover:border-indigo-200 group-hover:text-indigo-600"
+							class="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-400 shadow-sm transition-colors group-hover:border-indigo-200 group-hover:text-indigo-600 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-400 dark:group-hover:border-indigo-500 dark:group-hover:text-indigo-400"
 						>
 							{#if copySuccess}
 								<svg
@@ -434,7 +434,7 @@
 
 				{#if winnerName}
 					<div
-						class="mb-10 flex items-center gap-4 rounded-2xl border border-amber-200 bg-amber-50 p-4"
+						class="mb-10 flex items-center gap-4 rounded-2xl border border-amber-200 bg-amber-50 p-4 dark:border-amber-900/50 dark:bg-amber-900/20"
 					>
 						<span class="text-3xl"
 							><svg
@@ -453,18 +453,26 @@
 							</svg>
 						</span>
 						<div>
-							<p class="text-sm font-black tracking-tight text-amber-900 uppercase">
+							<p
+								class="text-sm font-black tracking-tight text-amber-900 uppercase dark:text-amber-300"
+							>
 								Dernière Victoire
 							</p>
-							<p class="font-medium text-amber-700">{winnerName} a remporté la partie !</p>
+							<p class="font-medium text-amber-700 dark:text-amber-400">
+								{winnerName} a remporté la partie !
+							</p>
 						</div>
 					</div>
 				{/if}
 
 				<div class="mb-10">
-					<div class="mb-6 flex items-center justify-between border-b border-slate-100 pb-4">
+					<div
+						class="mb-6 flex items-center justify-between border-b border-slate-100 pb-4 dark:border-slate-700"
+					>
 						<h2 class="text-lg font-bold">Joueurs</h2>
-						<span class="rounded-full bg-slate-900 px-3 py-1 text-xs font-bold text-white">
+						<span
+							class="rounded-full bg-slate-900 px-3 py-1 text-xs font-bold text-white dark:bg-slate-700"
+						>
 							{players.length} connecté{players.length > 1 ? 's' : ''}
 						</span>
 					</div>
@@ -476,21 +484,24 @@
 									player
 								)
 									? 'border-indigo-200 ring-2 ring-indigo-500/20'
-									: ''}"
+									: ''} dark:border-slate-700 dark:bg-slate-700/50 dark:hover:bg-slate-700 dark:hover:shadow-slate-900/50"
 							>
 								<img
 									src={player.photo}
 									alt=""
-									class="size-10 rounded-full border-2 border-white object-cover shadow-sm"
+									class="size-10 rounded-full border-2 border-white object-cover shadow-sm dark:border-slate-600"
 								/>
 								<div class="flex flex-col overflow-hidden">
-									<span class="truncate text-sm font-bold text-slate-800">{player.pseudo}</span>
+									<span class="truncate text-sm font-bold text-slate-800 dark:text-slate-200"
+										>{player.pseudo}</span
+									>
 									{#if player.isHost}
 										<span class="text-[10px] font-bold tracking-wider text-indigo-500 uppercase"
 											>Hôte</span
 										>
 									{:else if isCurrentPlayer(player)}
-										<span class="text-[10px] font-bold tracking-wider text-slate-400 uppercase"
+										<span
+											class="text-[10px] font-bold tracking-wider text-slate-400 uppercase dark:text-slate-500"
 											>Vous</span
 										>
 									{/if}
@@ -505,7 +516,7 @@
 						{#if hasGrid}
 							<button
 								onclick={editGrid}
-								class="w-full rounded-2xl border-2 border-slate-200 bg-white py-4 text-base font-semibold text-slate-700 transition-all hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-700 active:scale-[0.98]"
+								class="w-full rounded-2xl border-2 border-slate-200 bg-white py-4 text-base font-semibold text-slate-700 transition-all hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-700 active:scale-[0.98] dark:border-slate-600 dark:bg-slate-700 dark:text-slate-300 dark:hover:border-indigo-500 dark:hover:bg-indigo-900/30 dark:hover:text-indigo-400"
 							>
 								<span class="flex items-center justify-center gap-2">
 									<svg
@@ -529,7 +540,7 @@
 						<button
 							onclick={startGame}
 							disabled={isStartingGame || players.length < 1 || !hasGrid}
-							class="w-full rounded-2xl bg-slate-900 py-5 text-lg font-bold text-white transition-all hover:bg-indigo-600 active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"
+							class="w-full rounded-2xl bg-slate-900 py-5 text-lg font-bold text-white transition-all hover:bg-indigo-600 active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400 dark:bg-slate-700 dark:hover:bg-indigo-600 dark:disabled:bg-slate-600 dark:disabled:text-slate-500"
 						>
 							{#if !hasGrid}
 								Personnaliser la grille d'abord
@@ -542,7 +553,7 @@
 					</div>
 				{:else}
 					<div
-						class="flex items-center justify-center gap-3 rounded-2xl border border-slate-100 bg-slate-50 py-5 text-slate-500"
+						class="flex items-center justify-center gap-3 rounded-2xl border border-slate-100 bg-slate-50 py-5 text-slate-500 dark:border-slate-700 dark:bg-slate-700/50 dark:text-slate-400"
 					>
 						<div class="h-2 w-2 animate-pulse rounded-full bg-indigo-500"></div>
 						<span class="text-sm font-medium">Attente du lancement par l'hôte...</span>

@@ -46,23 +46,25 @@
 
 <div
 	bind:this={containerRef}
-	class="relative flex min-h-screen flex-col items-center justify-center bg-slate-50 p-6 font-sans text-slate-900"
+	class="relative flex min-h-screen flex-col items-center justify-center bg-slate-50 p-6 font-sans text-slate-900 dark:bg-slate-900 dark:text-slate-100"
 >
 	<div class="pointer-events-none absolute inset-0 overflow-hidden">
 		<div
-			class="absolute -top-[10%] -left-[10%] h-[40%] w-[40%] rounded-full bg-indigo-50/50 blur-3xl"
+			class="absolute -top-[10%] -left-[10%] h-[40%] w-[40%] rounded-full bg-indigo-50/50 blur-3xl dark:bg-indigo-900/20"
 		></div>
 		<div
-			class="absolute -right-[10%] -bottom-[10%] h-[40%] w-[40%] rounded-full bg-orange-50/50 blur-3xl"
+			class="absolute -right-[10%] -bottom-[10%] h-[40%] w-[40%] rounded-full bg-orange-50/50 blur-3xl dark:bg-orange-900/20"
 		></div>
 	</div>
 
 	<div class="relative z-10 w-full max-w-2xl text-center">
 		<div bind:this={titleRef} class="mb-16">
-			<h1 class="text-6xl font-black tracking-tighter text-slate-900 md:text-8xl">
+			<h1
+				class="text-6xl font-black tracking-tighter text-slate-900 md:text-8xl dark:text-slate-100"
+			>
 				BINGO<span class="text-indigo-600">.</span>
 			</h1>
-			<p class="mt-4 text-lg font-medium text-slate-500">
+			<p class="mt-4 text-lg font-medium text-slate-500 dark:text-slate-400">
 				Faites de vos évènements un jeu grandeur nature
 			</p>
 		</div>
@@ -71,10 +73,10 @@
 			<button
 				bind:this={cardsRef[0]}
 				onclick={createGame}
-				class="group flex cursor-pointer flex-col items-center gap-4 rounded-3xl border border-slate-200 bg-white p-8 transition-all hover:border-indigo-300 hover:shadow-2xl hover:shadow-indigo-100 active:scale-[0.98]"
+				class="group flex cursor-pointer flex-col items-center gap-4 rounded-3xl border border-slate-200 bg-white p-8 transition-all hover:border-indigo-300 hover:shadow-2xl hover:shadow-indigo-100 active:scale-[0.98] dark:border-slate-700 dark:bg-slate-800 dark:hover:border-indigo-500 dark:hover:shadow-indigo-900/50"
 			>
 				<div
-					class="flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600 transition-colors group-hover:bg-indigo-600 group-hover:text-white"
+					class="flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600 transition-colors group-hover:bg-indigo-600 group-hover:text-white dark:bg-indigo-900/50 dark:text-indigo-400 dark:group-hover:bg-indigo-600 dark:group-hover:text-white"
 				>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
@@ -89,17 +91,19 @@
 				</div>
 				<div class="text-center">
 					<h2 class="text-xl font-bold">Créer un salon</h2>
-					<p class="text-sm text-slate-500">Devenez l'hôte et gérez la partie</p>
+					<p class="text-sm text-slate-500 dark:text-slate-400">
+						Devenez l'hôte et gérez la partie
+					</p>
 				</div>
 			</button>
 
 			<button
 				bind:this={cardsRef[1]}
 				onclick={joinGame}
-				class="group flex cursor-pointer flex-col items-center gap-4 rounded-3xl border border-slate-200 bg-white p-8 transition-all hover:border-indigo-300 hover:shadow-2xl hover:shadow-indigo-100 active:scale-[0.98]"
+				class="group flex cursor-pointer flex-col items-center gap-4 rounded-3xl border border-slate-200 bg-white p-8 transition-all hover:border-indigo-300 hover:shadow-2xl hover:shadow-indigo-100 active:scale-[0.98] dark:border-slate-700 dark:bg-slate-800 dark:hover:border-indigo-500 dark:hover:shadow-indigo-900/50"
 			>
 				<div
-					class="flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600 transition-colors group-hover:bg-indigo-600 group-hover:text-white"
+					class="flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600 transition-colors group-hover:bg-indigo-600 group-hover:text-white dark:bg-indigo-900/50 dark:text-indigo-400 dark:group-hover:bg-indigo-600 dark:group-hover:text-white"
 				>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
@@ -118,7 +122,7 @@
 				</div>
 				<div class="text-center">
 					<h2 class="text-xl font-bold">Rejoindre</h2>
-					<p class="text-sm text-slate-500">Entrez un code et jouez</p>
+					<p class="text-sm text-slate-500 dark:text-slate-400">Entrez un code et jouez</p>
 				</div>
 			</button>
 		</div>
@@ -128,7 +132,7 @@
 		href="https://github.com/GautierPicon/Bingo"
 		target="_blank"
 		rel="noopener noreferrer"
-		class="fixed right-4 bottom-4 z-50 flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-3 text-sm font-medium text-slate-600 shadow-md transition-all hover:bg-slate-50 hover:shadow-lg md:right-auto md:bottom-8 md:left-1/2 md:-translate-x-1/2 md:px-4 md:py-2"
+		class="fixed right-4 bottom-4 z-40 flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-3 text-sm font-medium text-slate-600 shadow-md transition-all hover:bg-slate-50 hover:shadow-lg md:right-auto md:bottom-8 md:left-1/2 md:-translate-x-1/2 md:px-4 md:py-2 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700"
 	>
 		<img src={githubImg} alt="GitHub" class="size-5" />
 		<span class="hidden md:inline">Open Source</span>

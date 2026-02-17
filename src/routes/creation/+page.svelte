@@ -2,7 +2,6 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import gsap from 'gsap';
-	import BackButton from '$lib/components/BackButton.svelte';
 	import { useStar, players, isHost } from '../store';
 	import { supabase } from '$lib/supabase';
 	import profilImg from '$lib/assets/profil.png';
@@ -77,7 +76,7 @@
 			players.set([{ id: player.id, pseudo: playerName.trim(), photo: profilImg, isHost: true }]);
 			isHost.set(true);
 			goto('/grille');
-		} catch (error) {
+		} catch {
 			errorMessage = 'Une erreur est survenue lors de la création.';
 		} finally {
 			isCreating = false;
@@ -87,24 +86,28 @@
 	$: isFormValid = groupName.trim() && playerName.trim();
 </script>
 
-<div class="relative min-h-screen bg-slate-50 font-sans text-slate-900">
-	<header class="flex h-20 items-center px-6">
-		<BackButton />
-	</header>
-
-	<main class="flex flex-col items-center justify-center p-6 pb-20">
+<div
+	class="relative min-h-screen bg-slate-50 font-sans text-slate-900 dark:bg-slate-900 dark:text-slate-100"
+>
+	<main class="flex flex-col items-center justify-center p-6 pt-20 pb-20">
 		<div bind:this={formRef} class="w-full max-w-lg">
 			<div class="mb-10 text-center">
-				<h1 class="text-4xl font-black tracking-tight text-slate-900 md:text-5xl">
+				<h1
+					class="text-4xl font-black tracking-tight text-slate-900 md:text-5xl dark:text-slate-100"
+				>
 					Créer un salon<span class="text-indigo-600">.</span>
 				</h1>
-				<p class="mt-2 text-slate-500">Configurez votre partie en quelques secondes.</p>
+				<p class="mt-2 text-slate-500 dark:text-slate-400">
+					Configurez votre partie en quelques secondes.
+				</p>
 			</div>
 
-			<div class="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+			<div
+				class="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm dark:border-slate-700 dark:bg-slate-800"
+			>
 				{#if errorMessage}
 					<div
-						class="mb-6 rounded-xl border border-red-100 bg-red-50 p-4 text-sm font-medium text-red-600"
+						class="mb-6 rounded-xl border border-red-100 bg-red-50 p-4 text-sm font-medium text-red-600 dark:border-red-900/50 dark:bg-red-900/20 dark:text-red-400"
 					>
 						{errorMessage}
 					</div>
@@ -124,7 +127,7 @@
 							bind:value={groupName}
 							placeholder="Ex: Soirée entre amis"
 							disabled={isCreating}
-							class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4 text-lg font-semibold transition-all outline-none focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 disabled:opacity-50"
+							class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4 text-lg font-semibold transition-all outline-none focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 disabled:opacity-50 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-indigo-500 dark:focus:bg-slate-600"
 						/>
 					</div>
 
@@ -141,18 +144,20 @@
 							bind:value={playerName}
 							placeholder="Ex: Marie"
 							disabled={isCreating}
-							class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4 text-lg font-semibold transition-all outline-none focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 disabled:opacity-50"
+							class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4 text-lg font-semibold transition-all outline-none focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 disabled:opacity-50 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-indigo-500 dark:focus:bg-slate-600"
 						/>
 					</div>
 
 					<button
 						type="button"
 						onclick={() => useStar.set(!$useStar)}
-						class="cursor-pointer flex w-full items-center justify-between rounded-2xl border border-slate-100 bg-slate-50/50 p-4 transition-all hover:bg-slate-50"
+						class="flex w-full cursor-pointer items-center justify-between rounded-2xl border border-slate-100 bg-slate-50/50 p-4 transition-all hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-700/50 dark:hover:bg-slate-700"
 					>
 						<div class="flex flex-col items-start text-left">
-							<span class="font-bold text-slate-700">Case étoile centrale</span>
-							<span class="text-xs text-slate-500">La case du milieu est offerte au départ.</span>
+							<span class="font-bold text-slate-700 dark:text-slate-200">Case étoile centrale</span>
+							<span class="text-xs text-slate-500 dark:text-slate-400"
+								>La case du milieu est offerte au départ.</span
+							>
 						</div>
 						<div
 							class="relative h-6 w-11 rounded-full transition-colors {$useStar
@@ -170,7 +175,7 @@
 					<button
 						onclick={createGame}
 						disabled={!isFormValid || isCreating}
-						class="group relative w-full overflow-hidden rounded-2xl bg-slate-900 py-5 text-lg font-bold text-white transition-all hover:bg-indigo-600 active:scale-[0.98] disabled:cursor-not-allowed cursor-pointer disabled:bg-slate-200 disabled:text-slate-400"
+						class="group relative w-full cursor-pointer overflow-hidden rounded-2xl bg-slate-900 py-5 text-lg font-bold text-white transition-all hover:bg-indigo-600 active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400"
 					>
 						<span class="relative z-10 flex items-center justify-center gap-2">
 							{#if isCreating}
