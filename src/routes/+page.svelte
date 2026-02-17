@@ -144,14 +144,14 @@
 		href="https://github.com/GautierPicon/Bingo"
 		target="_blank"
 		rel="noopener noreferrer"
-		class="fixed right-4 bottom-4 z-40 flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-3 text-sm font-medium text-slate-600 shadow-md transition-all hover:bg-slate-50 hover:shadow-lg md:right-auto md:bottom-8 md:left-1/2 md:-translate-x-1/2 md:px-4 md:py-2 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700"
+		class="fixed bottom-4 left-4 z-40 flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-md transition-all hover:border-slate-300 hover:bg-slate-50 hover:shadow-lg md:bottom-8 md:left-1/2 md:h-auto md:w-auto md:-translate-x-1/2 md:gap-2 md:px-4 md:py-2 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400 dark:hover:border-slate-600 dark:hover:bg-slate-700"
 	>
 		<svg
 			width="20"
 			height="20"
 			viewBox="0 0 98 96"
 			xmlns="http://www.w3.org/2000/svg"
-			class="size-5"
+			class="size-7 md:size-5"
 		>
 			<path
 				fill-rule="evenodd"

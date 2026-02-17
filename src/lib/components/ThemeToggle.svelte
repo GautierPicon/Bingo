@@ -1,6 +1,8 @@
 <script>
 	import { theme } from '$lib/stores/theme';
 
+	let { size = 'default' } = $props();
+
 	let currentTheme = 'system';
 
 	theme.subscribe((value) => {
@@ -10,11 +12,15 @@
 	function handleClick() {
 		theme.cycleTheme();
 	}
+
+	let sizeClasses = $derived(
+		size === 'large' ? 'h-12 w-12 shadow-md hover:shadow-lg' : 'h-10 w-10 shadow-sm hover:shadow-md'
+	);
 </script>
 
 <button
 	onclick={handleClick}
-	class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-sm transition-all hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900 hover:shadow-md active:scale-95 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400 dark:hover:border-slate-600 dark:hover:bg-slate-700 dark:hover:text-slate-100"
+	class="flex {sizeClasses} cursor-pointer items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 transition-all hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900 active:scale-95 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400 dark:hover:border-slate-600 dark:hover:bg-slate-700 dark:hover:text-slate-100"
 	title={currentTheme === 'light'
 		? 'Mode clair'
 		: currentTheme === 'dark'
