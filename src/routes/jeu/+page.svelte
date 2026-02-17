@@ -1,6 +1,7 @@
 <script>
 	import { onMount, onDestroy } from 'svelte';
 	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 	import { useStar, hasPlayedGridAnimation } from '../store';
 	import gsap from 'gsap';
 	import { supabase } from '$lib/supabase';
@@ -99,7 +100,7 @@
 				clearInterval(pollingInterval);
 				pollingInterval = null;
 			}
-			goto('/salon');
+			goto(resolve('/salon'));
 		}
 	}
 
@@ -129,7 +130,7 @@
 							clearInterval(pollingInterval);
 							pollingInterval = null;
 						}
-						goto('/salon');
+						goto(resolve('/salon'));
 					}
 				}
 			)
@@ -282,7 +283,7 @@
 		}
 
 		setTimeout(() => {
-			goto('/salon');
+			goto(resolve('/salon'));
 		}, 2000);
 	}
 </script>

@@ -1,6 +1,7 @@
 <script>
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 	import gsap from 'gsap';
 	import { players, isHost } from './store';
 
@@ -47,11 +48,11 @@
 	});
 
 	function createGame() {
-		goto('/creation');
+		goto(resolve('/creation'));
 	}
 
 	function joinGame() {
-		goto('/rejoindre');
+		goto(resolve('/rejoindre'));
 	}
 </script>
 

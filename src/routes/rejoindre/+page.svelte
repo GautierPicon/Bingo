@@ -1,6 +1,7 @@
 <script>
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 	import gsap from 'gsap';
 	import { useStar, players, isHost } from '../store';
 	import { supabase } from '$lib/supabase';
@@ -103,7 +104,7 @@
 			]);
 			isHost.set(false);
 			useStar.set(room.use_star);
-			goto('/salon');
+			goto(resolve('/salon'));
 		} catch {
 			errorMessage = 'Une erreur est survenue.';
 		} finally {

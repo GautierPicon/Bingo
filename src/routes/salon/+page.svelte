@@ -1,6 +1,7 @@
 <script>
 	import { onMount, onDestroy } from 'svelte';
 	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 	import gsap from 'gsap';
 	import { isHost } from '../store';
 	import { supabase } from '$lib/supabase';
@@ -141,7 +142,7 @@
 				pollingInterval = null;
 			}
 			winnerName = '';
-			goto('/jeu');
+			goto(resolve('/jeu'));
 		} else if (data?.status === 'waiting' && data?.winner_id) {
 			if (data.winner_id) {
 				const { data: winnerData } = await supabase
@@ -180,7 +181,7 @@
 							pollingInterval = null;
 						}
 						winnerName = '';
-						goto('/jeu');
+						goto(resolve('/jeu'));
 					} else if (payload.new.status === 'waiting' && payload.new.winner_id) {
 						if (payload.new.winner_id) {
 							const { data: winnerData } = await supabase
@@ -289,7 +290,7 @@
 
 		if (!hasGrid) {
 			alert("Veuillez d'abord personnaliser la grille avant de lancer la partie.");
-			goto('/grille');
+			goto(resolve('/grille'));
 			return;
 		}
 
@@ -313,7 +314,7 @@
 			}
 
 			setTimeout(() => {
-				goto('/jeu');
+				goto(resolve('/jeu'));
 			}, 500);
 		} catch (error) {
 			console.error('Erreur lors du lancement:', error);
@@ -322,7 +323,7 @@
 	}
 
 	function editGrid() {
-		goto('/grille');
+		goto(resolve('/grille'));
 	}
 
 	async function copyCode() {

@@ -1,6 +1,7 @@
 <script>
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 	import gsap from 'gsap';
 	import { useStar, players, isHost } from '../store';
 	import { supabase } from '$lib/supabase';
@@ -82,7 +83,7 @@
 				}
 			]);
 			isHost.set(true);
-			goto('/grille');
+			goto(resolve('/grille'));
 		} catch {
 			errorMessage = 'Une erreur est survenue lors de la création.';
 		} finally {

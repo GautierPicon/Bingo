@@ -1,6 +1,7 @@
 <script>
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 	import gsap from 'gsap';
 	import { useStar } from '../store';
 	import { supabase } from '$lib/supabase';
@@ -21,7 +22,7 @@
 		playerId = localStorage.getItem('bingo_player_id') || '';
 
 		if (!roomId || !playerId) {
-			goto('/');
+			goto(resolve('/'));
 			return;
 		}
 
@@ -90,7 +91,7 @@
 				if (error) throw error;
 			}
 
-			goto('/salon');
+			goto(resolve('/salon'));
 		} catch (error) {
 			console.error('Erreur lors de la sauvegarde:', error);
 			errorMessage = 'Une erreur est survenue lors de la sauvegarde.';

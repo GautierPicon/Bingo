@@ -1,9 +1,10 @@
 <script>
 	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 	import ThemeToggle from './ThemeToggle.svelte';
 
 	function goHome() {
-		goto('/');
+		goto(resolve('/'));
 	}
 </script>
 
