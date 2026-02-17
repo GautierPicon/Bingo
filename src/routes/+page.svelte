@@ -3,15 +3,26 @@
 	import { goto } from '$app/navigation';
 	import gsap from 'gsap';
 	import { players, isHost } from './store';
-	import githubImg from '$lib/assets/github.png';
+	import githubLight from '$lib/assets/GithubLogos/GithubLight.png';
+	import githubDark from '$lib/assets/GithubLogos/GithubDark.png';
 
 	let containerRef = null;
 	let titleRef = null;
 	let cardsRef = [];
+	let isDark = false;
 
 	onMount(() => {
 		players.set([]);
 		isHost.set(false);
+
+		const updateTheme = () => {
+			isDark = document.documentElement.classList.contains('dark');
+		};
+
+		updateTheme();
+
+		const observer = new MutationObserver(updateTheme);
+		observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
 
 		const tl = gsap.timeline();
 
@@ -33,6 +44,8 @@
 			},
 			'-=0.3'
 		);
+
+		return () => observer.disconnect();
 	});
 
 	function createGame() {
@@ -134,7 +147,7 @@
 		rel="noopener noreferrer"
 		class="fixed right-4 bottom-4 z-40 flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-3 text-sm font-medium text-slate-600 shadow-md transition-all hover:bg-slate-50 hover:shadow-lg md:right-auto md:bottom-8 md:left-1/2 md:-translate-x-1/2 md:px-4 md:py-2 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700"
 	>
-		<img src={githubImg} alt="GitHub" class="size-5" />
+		<img src={isDark ? githubLight : githubDark} alt="GitHub" class="size-5" />
 		<span class="hidden md:inline">Open Source</span>
 	</a>
 </div>
