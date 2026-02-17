@@ -1,6 +1,5 @@
 ![header](.github/readme-header.png)
 
-
 # Bingo [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/GautierPicon/Bingo/blob/main/LICENSE.md)
 
 Make your events more fun
